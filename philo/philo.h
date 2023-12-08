@@ -20,5 +20,8 @@
 
 int main(int argc, char **argv);
 
+/*UTILS*/
+int	positive_atoi(const char *str);
+
 #endif
 

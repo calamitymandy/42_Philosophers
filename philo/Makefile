@@ -18,7 +18,7 @@ NAME = philo
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
-SRC = main.c
+SRC = main.c utils.c
 
 OBJ = ${SRC:.c=.o}
 
@@ -32,8 +32,7 @@ clean:
 	rm -rf ${OBJ}
 	@echo "\n$(YELLOW)✅ Objects cleaned successfully!\n"
 
-fclean:
-	rm -rf ${NAME}
+fclean: clean
 	rm -rf ${NAME}
 	@echo "\n$(RED)✅ Objects and executables deleted successfully!\n"
 

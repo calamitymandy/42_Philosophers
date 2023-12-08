@@ -14,13 +14,12 @@
 
 int	main(int argc, char **argv)
 {
-	(void)argv;
 	if (argc < 5 || argc > 6)
 	{
 		printf("Invalid number of arguments\n");
 		return (1);
 	}
 	else
-		printf("ok");
+		printf("%d", positive_atoi(argv[1]));
 	return (0);
 }
