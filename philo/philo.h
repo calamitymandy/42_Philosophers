@@ -13,15 +13,24 @@
 #ifndef PHILO_H
 # define PHILO_H
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
 
-int main(int argc, char **argv);
+typedef struct s_init_data
+{
+	int			nb_of_philos;
+	int			time_to_die;
+	int			time_to_eat;
+	int			time_to_sleep;
+	int			nb_of_meals;
+}t_data;
+
+int	main(int argc, char **argv);
+//int	start_init(char **argv, t_data data);
 
 /*UTILS*/
 int	positive_atoi(const char *str);
 
 #endif
-
