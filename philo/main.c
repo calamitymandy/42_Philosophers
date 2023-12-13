@@ -21,9 +21,9 @@ int	start_init(char **argv, t_data *data)
 	data->nb_of_meals = -1;
 	if (argv[5])
 		data->nb_of_meals = positive_atoi(argv[5]);
-	if (data->nb_of_philos <= 0 || data->time_to_die <= 0
-		|| data->time_to_eat <= 0 || data->time_to_sleep <= 0
-		|| data->nb_of_meals < -1)
+	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
+		|| data->time_to_die < 60 || data->time_to_eat < 60
+		|| data->time_to_sleep < 60 || data->nb_of_meals < -1)
 	{
 		printf("Incorrect arguments");
 		return (1);
