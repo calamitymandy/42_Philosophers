@@ -17,6 +17,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <pthread.h>
 
 typedef struct s_init_data
 {
