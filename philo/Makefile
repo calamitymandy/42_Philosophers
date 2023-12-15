@@ -24,18 +24,20 @@ SRC = main.c utils.c
 OBJ = ${SRC:.c=.o}
 
 all: ${NAME}
-
-${NAME}: ${OBJ}
+	@echo "\n$(GREEN)✅ Objects and executables created successfully!\n"
+	
+${NAME}: ${OBJ}		
 		${CC} ${CFLAGS} ${OBJ} -o ${NAME}
-		@echo "\n$(GREEN)✅ Objects and executables created successfully!\n"
 
 clean:
-	rm -rf ${OBJ}
 	@echo "\n$(YELLOW)✅ Objects cleaned successfully!\n"
+	rm -rf ${OBJ}
+	
 
 fclean: clean
-	rm -rf ${NAME}
 	@echo "\n$(RED)✅ Objects and executables deleted successfully!\n"
+	rm -rf ${NAME}
+	@echo "$(GREEN)"
 
 re: fclean all
 

@@ -19,14 +19,28 @@
 # include <string.h>
 # include <pthread.h>
 
+typedef struct s_philos
+{
+	//TODO
+}t_philos;
+
 typedef struct s_init_data
 {
-	int			nb_of_philos;
-	int			time_to_die;
-	int			time_to_eat;
-	int			time_to_sleep;
-	int			nb_of_meals;
+	pthread_t			*threads_id;
+	int					nb_of_philos;
+	int					time_to_die;
+	int					time_to_eat;
+	int					time_to_sleep;
+	int					nb_of_meals;
+	int					dead;
+	int					finito;
+	pthread_mutex_t		msg;
+	pthread_mutex_t		lock;
+	pthread_mutex_t		*forks;
+	t_philos			*philos;
 }t_data;
+
+
 
 int	main(int argc, char **argv);
 //int	start_init(char **argv, t_data data);
