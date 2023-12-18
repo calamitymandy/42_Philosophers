@@ -21,12 +21,16 @@
 
 typedef struct s_philos
 {
-	//TODO
+	int					philo_id;
+	int					meals_eaten;
+	int					is_eating;
+	pthread_mutex_t		*right_fork;
+	pthread_mutex_t		*left_fork;
 }t_philos;
 
 typedef struct s_init_data
 {
-	pthread_t			*threads_id;
+	pthread_t			*thread_id;
 	int					nb_of_philos;
 	int					time_to_die;
 	int					time_to_eat;
@@ -39,8 +43,6 @@ typedef struct s_init_data
 	pthread_mutex_t		*forks;
 	t_philos			*philos;
 }t_data;
-
-
 
 int	main(int argc, char **argv);
 //int	start_init(char **argv, t_data data);

@@ -16,8 +16,8 @@
 
 int	mallocating(t_data *data)
 {
-	data->threads_id = malloc(sizeof(pthread_t) * data->nb_of_philos);
-	if (!data->threads_id)
+	data->thread_id = malloc(sizeof(pthread_t) * data->nb_of_philos);
+	if (!data->thread_id)
 	{
 		printf("Malloc error: threads ids");
 		return (1);
@@ -34,12 +34,54 @@ int	mallocating(t_data *data)
 		printf("Malloc error: forks");
 		return (1);
 	}
-	if ((!data->threads_id || !data->philos || !data->forks) && data)
+	if ((!data->thread_id || !data->philos || !data->forks) && data)
 	{
 		//TO DO exit & destroy function
 		return (1);
 	}
 	return (0);
+}
+
+/*
+ * The function initializes the forks for a dining philosophers problem:
+ * - 1st while loop to to initialize the mutex for each fork.
+ * - Then assign left [0] and right [nb_of_philos -1] forks for the 1st philo
+ * - 2nd loop to initialize left and right forks for every other philosopher.
+ * It assigns the left fork to the current philosopher as the fork at index `i`,
+ * and the right fork as the fork at index `i - 1`.
+ */
+int	init_forks(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	while (++i < data->nb_of_philos)
+		pthread_mutex_init(&data->forks[i], NULL);
+	i = 1;
+	data->philos[0].left_fork = &data->forks[0];
+	data->philos[0].right_fork = &data->forks[data->nb_of_philos -1];
+	while (i < data->nb_of_philos)
+	{
+		data->philos[i].left_fork = &data->forks[i];
+		data->philos[i].right_fork = &data->forks[i - 1];
+		i++;
+	}
+	return (0);
+}
+
+void	init_philos(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_of_philos)
+	{
+		data->philos[i].philo_id = i + 1;
+		data->philos[i].meals_eaten = 0;
+		data->philos[i].is_eating = 0;
+		//pthread_mutex_init(&data->philos[i].lock, NULL);
+		i++;
+	}
 }
 
 int	start_init(char **argv, t_data *data)
@@ -77,6 +119,8 @@ int	main(int argc, char **argv)
 	if (start_init(argv, &data))
 		return (1);
 	if (mallocating(&data))
+		return (1);
+	if (init_forks(&data))
 		return (1);
 	return (0);
 }
