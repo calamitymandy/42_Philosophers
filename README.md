@@ -71,3 +71,46 @@ with a mutex for each of them.
 ### Step 3: Initialize and allocate
 ### Step 4: philo's routine, supervisor and monitor
 ### Step 5: Clean memory
+
+## CREATE THREADS
+We can create a new thread from any thread in the program using the pthread_create function. 
+Prototype pthread_create:
+
+```
+int pthread_create(pthread_t *restrict thread,
+                    const pthread_attr_t *restrict attr,
+                    void *(*start_routine)(void *),
+                    void *restrict arg);
+```
+
+Arguments are:
+
+- thread: A pointer to a variable of type pthread_t to store the id of the thread to be created.
+- attr: An argument that allows changing the default attributes of the new thread during its creation. This goes beyond the scope of this project, so we will indicate NULL here.
+- start_routine: The function by which the thread begins its execution. This function must have the prototype void 
+```
+*function_name_of_choice(void *arg);
+```
+When the thread reaches the end of this function, it will have completed all its tasks.
+- arg: The pointer to an argument to be passed to the start_routine function of the thread. To pass multiple parameters to this function, you will need to provide a pointer to a structure here.
+
+When the pthread_create function completes, the thread variable provided to it will contain the id of the created thread. The function returns 0 if the creation was successful or another value if there was an error.
+
+## JOIN THREADS
+
+To retrieve a thread, to block the execution of a thread while waiting for another thread to finish, you can use the pthread_join function:
+
+```
+int pthread_join(pthread_t thread, void **retval);
+```
+
+Parameters:
+
+- thread: The id of the thread being waited for. The thread specified here must be joinable (i.e., not detached).
+- retval: A pointer to a variable that can contain the return value of the thread's routine function (the start_routine function provided during the thread creation). We don't need this value, so we simply specify NULL.
+
+The pthread_join function returns 0 on success or another integer to represent an error code.
+
+It is noteworthy that one can only wait for the end of a specific thread. There is no way to wait for the first thread to finish without dealing with its identifier, as the wait function of a child process does.
+
+In this project, we want to ensure that the main thread of our program waits for each philosopher thread to finish its execution. This way, we can free up memory and safely terminate the program.

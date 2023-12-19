@@ -39,3 +39,12 @@ int	positive_atoi(const char *str)
 		return (-2);
 	return (res);
 }
+
+/* Get the current time in milliseconds */
+long	get_time(void)
+{
+	struct timeval	time_value;
+
+	gettimeofday(&time_value, NULL);
+	return ((time_value.tv_sec * 1000) + (time_value.tv_usec / 1000));
+}

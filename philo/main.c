@@ -16,12 +16,12 @@
 
 int	mallocating(t_data *data)
 {
-	data->thread_id = malloc(sizeof(pthread_t) * data->nb_of_philos);
-	if (!data->thread_id)
-	{
-		printf("Malloc error: threads ids");
-		return (1);
-	}
+	// data->thread_id = malloc(sizeof(pthread_t) * data->nb_of_philos);
+	// if (!data->thread_id)
+	// {
+	// 	printf("Malloc error: threads ids");
+	// 	return (1);
+	// }
 	data->philos = malloc(sizeof(t_philos) * data->nb_of_philos);
 	if (!data->philos)
 	{
@@ -34,7 +34,7 @@ int	mallocating(t_data *data)
 		printf("Malloc error: forks");
 		return (1);
 	}
-	if ((!data->thread_id || !data->philos || !data->forks) && data)
+	if ((!data->philos || !data->forks) && data)
 	{
 		//TO DO exit & destroy function
 		return (1);
@@ -69,6 +69,46 @@ int	init_forks(t_data *data)
 	return (0);
 }
 
+void	*routine(void *arg)
+{
+	t_philos	*philos;
+	int			count;
+
+	philos = arg;
+	pthread_mutex_lock(&philos->lock);
+	count = philos->count;
+	while (count < 6)
+	{
+		printf("thread %d: count= %d\n", philos->philo_id, count);
+		usleep(1);
+		count++;
+	}
+	pthread_mutex_unlock(&philos->lock);
+	return ((void *)arg);
+}
+
+void	start_simulation(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_of_philos)
+	{
+		data->philos[i].count = 0;
+		data->philos[i].philo_id = i;
+		pthread_mutex_init(&data->philos[i].lock, NULL);
+		pthread_create(&data->philos[i].thread_id, NULL, routine, &data->philos[i]);
+		i++;
+	}
+	i = 0;
+	while (i < data->nb_of_philos)
+	{
+		pthread_join(data->philos[i].thread_id, NULL);
+		pthread_mutex_destroy(&data->philos[i].lock);
+		i++;
+	}
+}
+
 void	init_philos(t_data *data)
 {
 	int	i;
@@ -100,10 +140,10 @@ int	start_init(char **argv, t_data *data)
 		printf("Incorrect arguments");
 		return (1);
 	}
-	data->dead = 0;
-	data->finito = 0;
-	pthread_mutex_init(&data->msg, NULL);
-	pthread_mutex_init(&data->lock, NULL);
+	//data->dead = 0;
+	//data->finito = 0;
+	//pthread_mutex_init(&data->msg, NULL);
+	//pthread_mutex_init(&data->lock, NULL);
 	return (0);
 }
 
@@ -122,5 +162,8 @@ int	main(int argc, char **argv)
 		return (1);
 	if (init_forks(&data))
 		return (1);
+	start_simulation(&data);
+	data.start_time = get_time();
+	//printf("%lld", data.start_time);
 	return (0);
 }

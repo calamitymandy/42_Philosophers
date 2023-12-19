@@ -18,10 +18,14 @@
 # include <stdlib.h>
 # include <string.h>
 # include <pthread.h>
+# include <sys/time.h>
 
 typedef struct s_philos
 {
+	pthread_t			thread_id;
 	int					philo_id;
+	pthread_mutex_t		lock; //fake simulation
+	int					count; //fake simulation
 	int					meals_eaten;
 	int					is_eating;
 	pthread_mutex_t		*right_fork;
@@ -30,16 +34,16 @@ typedef struct s_philos
 
 typedef struct s_init_data
 {
-	pthread_t			*thread_id;
 	int					nb_of_philos;
 	int					time_to_die;
 	int					time_to_eat;
 	int					time_to_sleep;
 	int					nb_of_meals;
-	int					dead;
-	int					finito;
-	pthread_mutex_t		msg;
-	pthread_mutex_t		lock;
+	long long			start_time;
+	//int					dead;
+	//int					finito;
+	//pthread_mutex_t		msg;
+	//pthread_mutex_t		lock;
 	pthread_mutex_t		*forks;
 	t_philos			*philos;
 }t_data;
@@ -48,6 +52,7 @@ int	main(int argc, char **argv);
 //int	start_init(char **argv, t_data data);
 
 /*UTILS*/
-int	positive_atoi(const char *str);
+int		positive_atoi(const char *str);
+long	get_time(void);
 
 #endif
