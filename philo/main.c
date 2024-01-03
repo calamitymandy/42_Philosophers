@@ -164,6 +164,6 @@ int	main(int argc, char **argv)
 		return (1);
 	start_simulation(&data);
 	data.start_time = get_time();
-	//printf("%lld", data.start_time);
+	printf("%lld", data.start_time);
 	return (0);
 }
