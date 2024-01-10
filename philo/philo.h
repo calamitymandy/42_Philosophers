@@ -22,7 +22,7 @@
 
 typedef struct s_philos
 {
-	pthread_t			thread_id;
+	pthread_t			thread_id; //used to store the identifier of a thread
 	int					philo_id;
 	pthread_mutex_t		lock; //fake simulation
 	int					count; //fake simulation

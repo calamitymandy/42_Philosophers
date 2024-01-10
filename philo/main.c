@@ -72,16 +72,14 @@ int	init_forks(t_data *data)
 void	*routine(void *arg)
 {
 	t_philos	*philos;
-	int			count;
 
 	philos = arg;
 	pthread_mutex_lock(&philos->lock);
-	count = philos->count;
-	while (count < 6)
+	while (philos->count < 6)
 	{
-		printf("thread %d: count= %d\n", philos->philo_id, count);
+		printf("thread_id: %d | philo_id: %d | count = %d\n", (int)philos->thread_id, philos->philo_id, philos->count);
 		usleep(1);
-		count++;
+		philos->count++;
 	}
 	pthread_mutex_unlock(&philos->lock);
 	return ((void *)arg);
