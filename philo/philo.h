@@ -22,6 +22,7 @@
 
 typedef struct s_philos
 {
+	struct s_init_data	*data;
 	pthread_t			thread_id; //used to store the identifier of a thread
 	int					philo_id;
 	pthread_mutex_t		lock; //fake simulation
@@ -40,7 +41,7 @@ typedef struct s_init_data
 	int					time_to_sleep;
 	int					nb_of_meals;
 	long long			start_time;
-	//int					dead;
+	int					is_dead;
 	//int					finito;
 	//pthread_mutex_t		msg;
 	//pthread_mutex_t		lock;

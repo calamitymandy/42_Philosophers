@@ -74,7 +74,6 @@ void	*routine(void *arg)
 	t_philos	*philos;
 
 	philos = arg;
-	//printf("%d\n", philos->data->is_dead);
 	pthread_mutex_lock(&philos->lock);
 	while (philos->count < 6)
 	{
@@ -95,9 +94,8 @@ void	start_simulation(t_data *data)
 	{
 		data->philos[i].count = 0;
 		data->philos[i].philo_id = i;
-		data->philos[i].data = data; // Set the data field to the main data structure
 		pthread_mutex_init(&data->philos[i].lock, NULL);
-		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
+		pthread_create(&data->philos[i].thread_id, NULL, routine, &data->philos[i]);
 		i++;
 	}
 	i = 0;
@@ -140,7 +138,7 @@ int	start_init(char **argv, t_data *data)
 		printf("Incorrect arguments");
 		return (1);
 	}
-	data->is_dead = 0;
+	//data->dead = 0;
 	//data->finito = 0;
 	//pthread_mutex_init(&data->msg, NULL);
 	//pthread_mutex_init(&data->lock, NULL);
@@ -164,6 +162,6 @@ int	main(int argc, char **argv)
 		return (1);
 	start_simulation(&data);
 	data.start_time = get_time();
-	printf("%lld\n", data.start_time);
+	printf("%lld", data.start_time);
 	return (0);
 }
