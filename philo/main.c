@@ -75,14 +75,27 @@ void	*routine(void *arg)
 
 	philos = arg;
 	//printf("%d\n", philos->data->is_dead);
-	pthread_mutex_lock(&philos->lock);
-	while (philos->count < 6)
+	while (!philos->data->is_dead)
 	{
-		printf("thread_id: %d | philo_id: %d | count = %d\n", (int)philos->thread_id, philos->philo_id, philos->count);
-		usleep(1);
-		philos->count++;
+		usleep(1000);
+		if ((get_time() - philos->data->start_time) > philos->data->time_to_die)
+		{
+			philos->data->is_dead = 1;
+			printf("philo %d has died get time: %ld\n", philos->philo_id, get_time());
+			long long operation = get_time() - philos->data->start_time;
+			printf("philo %d has died philos->data->start_time: %lld\n", philos->philo_id, operation);
+			printf("philo %d has died operation: %lld\n", philos->philo_id, (get_time() - philos->data->start_time));
+		}
+		printf("philo %d is sleeping\n", philos->philo_id);
 	}
-	pthread_mutex_unlock(&philos->lock);
+	// pthread_mutex_lock(&philos->lock);
+	// while (philos->count < 6)
+	// {
+	// 	printf("thread_id: %d | philo_id: %d | count = %d\n", (int)philos->thread_id, philos->philo_id, philos->count);
+	// 	usleep(1);
+	// 	philos->count++;
+	// }
+	// pthread_mutex_unlock(&philos->lock);
 	return ((void *)arg);
 }
 
