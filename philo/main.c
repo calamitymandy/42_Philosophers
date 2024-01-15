@@ -74,20 +74,24 @@ void	*routine(void *arg)
 	t_philos	*philos;
 
 	philos = arg;
-	//printf("%d\n", philos->data->is_dead);
 	while (!philos->data->is_dead)
 	{
-		usleep(1000);
 		if ((get_time() - philos->data->start_time) > philos->data->time_to_die)
 		{
 			philos->data->is_dead = 1;
 			printf("philo %d has died get time: %ld\n", philos->philo_id, get_time());
-			long long operation = get_time() - philos->data->start_time;
-			printf("philo %d has died philos->data->start_time: %lld\n", philos->philo_id, operation);
-			printf("philo %d has died operation: %lld\n", philos->philo_id, (get_time() - philos->data->start_time));
+			printf("philos->data->time_to_die: %d\n", philos->data->time_to_die);
+			printf("operation: %lld\n", get_time() - philos->data->start_time);
+			//return (0);
 		}
-		printf("philo %d is sleeping\n", philos->philo_id);
+		if (philos->data->is_dead)
+			printf("philos->data->is_dead: %d\n", philos->data->is_dead);
+		
+		//printf("philo %d is sleeping\n", philos->philo_id);
+		//printf("philo %d is thinking\n", philos->philo_id);
 	}
+	
+	
 	// pthread_mutex_lock(&philos->lock);
 	// while (philos->count < 6)
 	// {
@@ -175,8 +179,8 @@ int	main(int argc, char **argv)
 		return (1);
 	if (init_forks(&data))
 		return (1);
-	start_simulation(&data);
 	data.start_time = get_time();
-	printf("%lld\n", data.start_time);
+	start_simulation(&data);
+	//printf("%lld\n", data.start_time);
 	return (0);
 }
