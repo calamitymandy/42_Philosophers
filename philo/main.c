@@ -69,61 +69,33 @@ int	init_forks(t_data *data)
 	return (0);
 }
 
+int	philo_is_dead(t_philos *philos)
+{
+	pthread_mutex_lock(&philos->data->lock);
+	if (philos->data->is_dead)
+	{
+		pthread_mutex_unlock(&philos->data->lock);
+		return (1);
+	}
+	pthread_mutex_unlock(&philos->data->lock);
+	return (0);
+}
+
 void	*routine(void *arg)
 {
 	t_philos	*philos;
 
-	philos = arg;
+	philos = (t_philos *)arg;
 	while (!philos->data->is_dead)
 	{
-		if ((get_time() - philos->data->start_time) > philos->data->time_to_die)
-		{
-			philos->data->is_dead = 1;
-			printf("philo %d has died get time: %ld\n", philos->philo_id, get_time());
-			printf("philos->data->time_to_die: %d\n", philos->data->time_to_die);
-			printf("operation: %lld\n", get_time() - philos->data->start_time);
-			//return (0);
-		}
-		if (philos->data->is_dead)
-			printf("philos->data->is_dead: %d\n", philos->data->is_dead);
-		
-		//printf("philo %d is sleeping\n", philos->philo_id);
-		//printf("philo %d is thinking\n", philos->philo_id);
+		if (philo_is_dead(philos))
+			return (0);
+		printf("philo %d is sleeping\n", philos->philo_id);
+		if (philo_is_dead(philos))
+			return (0);
+		printf("philo %d is thinking\n", philos->philo_id);
 	}
-	
-	
-	// pthread_mutex_lock(&philos->lock);
-	// while (philos->count < 6)
-	// {
-	// 	printf("thread_id: %d | philo_id: %d | count = %d\n", (int)philos->thread_id, philos->philo_id, philos->count);
-	// 	usleep(1);
-	// 	philos->count++;
-	// }
-	// pthread_mutex_unlock(&philos->lock);
 	return ((void *)arg);
-}
-
-void	start_simulation(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_of_philos)
-	{
-		data->philos[i].count = 0;
-		data->philos[i].philo_id = i;
-		data->philos[i].data = data; // Set the data field to the main data structure
-		pthread_mutex_init(&data->philos[i].lock, NULL);
-		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
-		i++;
-	}
-	i = 0;
-	while (i < data->nb_of_philos)
-	{
-		pthread_join(data->philos[i].thread_id, NULL);
-		pthread_mutex_destroy(&data->philos[i].lock);
-		i++;
-	}
 }
 
 void	init_philos(t_data *data)
@@ -141,6 +113,28 @@ void	init_philos(t_data *data)
 	}
 }
 
+void	start_simulation(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	init_philos(data);
+	while (i < data->nb_of_philos)
+	{
+		data->philos[i].data = data; // Set the data field to the main data structure
+		pthread_mutex_init(&data->philos[i].lock, NULL);
+		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
+		i++;
+	}
+	i = 0;
+	while (i < data->nb_of_philos)
+	{
+		pthread_join(data->philos[i].thread_id, NULL);
+		pthread_mutex_destroy(&data->philos[i].lock);
+		i++;
+	}
+}
+
 int	start_init(char **argv, t_data *data)
 {
 	data->nb_of_philos = positive_atoi(argv[1]);
@@ -152,7 +146,7 @@ int	start_init(char **argv, t_data *data)
 		data->nb_of_meals = positive_atoi(argv[5]);
 	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
 		|| data->time_to_die < 60 || data->time_to_eat < 60
-		|| data->time_to_sleep < 60 || data->nb_of_meals < 0)
+		|| data->time_to_sleep < 60 || data->nb_of_meals < -1)
 	{
 		printf("Incorrect arguments");
 		return (1);

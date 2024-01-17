@@ -44,7 +44,7 @@ typedef struct s_init_data
 	int					is_dead;
 	//int					finito;
 	//pthread_mutex_t		msg;
-	//pthread_mutex_t		lock;
+	pthread_mutex_t		lock;
 	pthread_mutex_t		*forks;
 	t_philos			*philos;
 }t_data;

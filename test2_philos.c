@@ -57,7 +57,7 @@ int main()
     status_message = pthread_mutex_destroy(&chopstick[i]);
     if (status_message != 0)
     {
-      printf("\n Mutex Destroyed \n");
+      printf("\n Mutex not destroyed \n");
       exit(1);
     }
   }
