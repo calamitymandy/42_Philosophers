@@ -54,6 +54,6 @@ int	main(int argc, char **argv);
 
 /*UTILS*/
 int		positive_atoi(const char *str);
-long	get_time(void);
+int		get_time(void);
 
 #endif

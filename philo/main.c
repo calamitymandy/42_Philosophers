@@ -81,6 +81,31 @@ int	philo_is_dead(t_philos *philos)
 	return (0);
 }
 
+/**
+ * The function "wait_given_time" waits for a given amount of time or until a philosopher is dead.
+ * 
+ * @param philos A pointer to a struct that contains information about the philosophers.
+ * @param given_time The given_time parameter is the amount of time in milliseconds that the function
+ * should wait for.
+ */
+void	wait_given_time(t_philos *philos, int given_time)
+{
+	int	start_time;
+
+	start_time = get_time();
+	while ((get_time() - start_time) < given_time &&
+		!philo_is_dead(philos))
+		{
+			usleep(100);
+		}
+}
+
+void	philo_is_sleeping(t_philos *philos)
+{
+	printf("philo %d is sleeping\n", philos->philo_id); //BETTER THIS!!!!
+	wait_given_time(philos, philos->data->time_to_sleep);
+}
+
 void	*routine(void *arg)
 {
 	t_philos	*philos;
@@ -90,7 +115,7 @@ void	*routine(void *arg)
 	{
 		if (philo_is_dead(philos))
 			return (0);
-		printf("philo %d is sleeping\n", philos->philo_id);
+		philo_is_sleeping(philos);
 		if (philo_is_dead(philos))
 			return (0);
 		printf("philo %d is thinking\n", philos->philo_id);
