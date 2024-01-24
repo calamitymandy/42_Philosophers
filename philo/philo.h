@@ -25,8 +25,8 @@ typedef struct s_philos
 	struct s_init_data	*data;
 	pthread_t			thread_id; //used to store the identifier of a thread
 	int					philo_id;
-	pthread_mutex_t		lock; //fake simulation
-	int					count; //fake simulation
+	//pthread_mutex_t		lock; //fake simulation
+	//int					count; //fake simulation
 	int					meals_eaten;
 	int					is_eating;
 	pthread_mutex_t		*right_fork;

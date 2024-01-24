@@ -100,9 +100,19 @@ void	wait_given_time(t_philos *philos, int given_time)
 		}
 }
 
+void	write_message(char *str, t_philos *philos)
+{
+	if (!philo_is_dead(philos))
+	{
+		pthread_mutex_lock(&philos->data->lock);
+		printf("philosopher %lld %d %s\n", get_time() - philos->data->start_time, philos->philo_id, str); //BETTER THIS!!!!
+		pthread_mutex_unlock(&philos->data->lock);
+	}
+}
+
 void	philo_is_sleeping(t_philos *philos)
 {
-	printf("philo %d is sleeping\n", philos->philo_id); //BETTER THIS!!!!
+	write_message("is sleeping", philos);
 	wait_given_time(philos, philos->data->time_to_sleep);
 }
 
@@ -133,7 +143,6 @@ void	init_philos(t_data *data)
 		data->philos[i].philo_id = i + 1;
 		data->philos[i].meals_eaten = 0;
 		data->philos[i].is_eating = 0;
-		//pthread_mutex_init(&data->philos[i].lock, NULL);
 		i++;
 	}
 }
@@ -147,7 +156,6 @@ void	start_simulation(t_data *data)
 	while (i < data->nb_of_philos)
 	{
 		data->philos[i].data = data; // Set the data field to the main data structure
-		pthread_mutex_init(&data->philos[i].lock, NULL);
 		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
 		i++;
 	}
@@ -155,7 +163,6 @@ void	start_simulation(t_data *data)
 	while (i < data->nb_of_philos)
 	{
 		pthread_join(data->philos[i].thread_id, NULL);
-		pthread_mutex_destroy(&data->philos[i].lock);
 		i++;
 	}
 }
