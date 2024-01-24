@@ -128,7 +128,7 @@ void	*routine(void *arg)
 		philo_is_sleeping(philos);
 		if (philo_is_dead(philos))
 			return (0);
-		printf("philo %d is thinking\n", philos->philo_id);
+		write_message("is thinking", philos);
 	}
 	return ((void *)arg);
 }
