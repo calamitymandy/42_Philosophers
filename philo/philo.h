@@ -49,11 +49,13 @@ typedef struct s_init_data
 	t_philos			*philos;
 }t_data;
 
-int	main(int argc, char **argv);
-//int	start_init(char **argv, t_data data);
+/*MAIN*/
+int		philo_is_dead(t_philos *philos);
 
 /*UTILS*/
 int		positive_atoi(const char *str);
 int		get_time(void);
+void	write_message(char *str, t_philos *philos);
+void	wait_given_time(t_philos *philos, int given_time);
 
 #endif

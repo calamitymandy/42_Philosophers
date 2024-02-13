@@ -81,39 +81,28 @@ int	philo_is_dead(t_philos *philos)
 	return (0);
 }
 
-/**
- * The function "wait_given_time" waits for a given amount of time or until a philosopher is dead.
- * 
- * @param philos A pointer to a struct that contains information about the philosophers.
- * @param given_time The given_time parameter is the amount of time in milliseconds that the function
- * should wait for.
- */
-void	wait_given_time(t_philos *philos, int given_time)
-{
-	int	start_time;
-
-	start_time = get_time();
-	while ((get_time() - start_time) < given_time &&
-		!philo_is_dead(philos))
-		{
-			usleep(100);
-		}
-}
-
-void	write_message(char *str, t_philos *philos)
-{
-	if (!philo_is_dead(philos))
-	{
-		pthread_mutex_lock(&philos->data->lock);
-		printf("philosopher %lld %d %s\n", get_time() - philos->data->start_time, philos->philo_id, str); //BETTER THIS!!!!
-		pthread_mutex_unlock(&philos->data->lock);
-	}
-}
-
 void	philo_is_sleeping(t_philos *philos)
 {
 	write_message("is sleeping", philos);
 	wait_given_time(philos, philos->data->time_to_sleep);
+}
+
+void	philo_is_eating(t_philos *philos)
+{
+	pthread_mutex_lock(philos->right_fork);
+	write_message("has taken right fork", philos);
+	if (philos->data->nb_of_philos == 1)
+	{
+		wait_given_time(philos, philos->data->time_to_die);
+		pthread_mutex_unlock(philos->right_fork);
+		return ;
+	}
+	//pthread_mutex_lock(philos->left_fork);
+	write_message("has taken left fork", philos);
+	write_message("is eating", philos);
+	wait_given_time(philos, philos->data->time_to_eat);
+	//pthread_mutex_unlock(philos->left_fork); // smth went wrong with implementing left fork, CHECK!!
+	pthread_mutex_unlock(philos->right_fork);
 }
 
 void	*routine(void *arg)
@@ -123,6 +112,9 @@ void	*routine(void *arg)
 	philos = (t_philos *)arg;
 	while (!philos->data->is_dead)
 	{
+		if (philo_is_dead(philos))
+			return (0);
+		philo_is_eating(philos);
 		if (philo_is_dead(philos))
 			return (0);
 		philo_is_sleeping(philos);
