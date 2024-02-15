@@ -44,8 +44,8 @@ int	mallocating(t_data *data)
 
 /*
  * The function initializes the forks for a dining philosophers problem:
- * - 1st while loop to to initialize the mutex for each fork.
- * - Then assign left [0] and right [nb_of_philos -1] forks for the 1st philo
+ * - 1st while loop to initialize the mutex for each fork.
+ * - Then assign left[0] and right[nb_of_philos -1] forks for the 1st philo
  * - 2nd loop to initialize left and right forks for every other philosopher.
  * It assigns the left fork to the current philosopher as the fork at index `i`,
  * and the right fork as the fork at index `i - 1`.
@@ -57,14 +57,13 @@ int	init_forks(t_data *data)
 	i = -1;
 	while (++i < data->nb_of_philos)
 		pthread_mutex_init(&data->forks[i], NULL);
-	i = 1;
 	data->philos[0].left_fork = &data->forks[0];
 	data->philos[0].right_fork = &data->forks[data->nb_of_philos -1];
-	while (i < data->nb_of_philos)
+	i = -1;
+	while (++i < data->nb_of_philos)
 	{
 		data->philos[i].left_fork = &data->forks[i];
 		data->philos[i].right_fork = &data->forks[i - 1];
-		i++;
 	}
 	return (0);
 }
@@ -97,11 +96,11 @@ void	philo_is_eating(t_philos *philos)
 		pthread_mutex_unlock(philos->right_fork);
 		return ;
 	}
-	//pthread_mutex_lock(philos->left_fork);
+	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
 	write_message("is eating", philos);
 	wait_given_time(philos, philos->data->time_to_eat);
-	//pthread_mutex_unlock(philos->left_fork); // smth went wrong with implementing left fork, CHECK!!
+	pthread_mutex_unlock(philos->left_fork);
 	pthread_mutex_unlock(philos->right_fork);
 }
 
