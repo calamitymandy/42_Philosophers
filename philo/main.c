@@ -59,7 +59,7 @@ int	init_forks(t_data *data)
 		pthread_mutex_init(&data->forks[i], NULL);
 	data->philos[0].left_fork = &data->forks[0];
 	data->philos[0].right_fork = &data->forks[data->nb_of_philos -1];
-	i = -1;
+	i = 0;
 	while (++i < data->nb_of_philos)
 	{
 		data->philos[i].left_fork = &data->forks[i];
