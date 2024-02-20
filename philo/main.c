@@ -96,10 +96,13 @@ void	philo_is_eating(t_philos *philos)
 		pthread_mutex_unlock(philos->right_fork);
 		return ;
 	}
+	pthread_mutex_lock(philos->lock_philo); //segfault
 	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
 	write_message("is eating", philos);
+	philos->meals_eaten++; //segfault
 	wait_given_time(philos, philos->data->time_to_eat);
+	pthread_mutex_unlock(philos->lock_philo); //segfault
 	pthread_mutex_unlock(philos->left_fork);
 	pthread_mutex_unlock(philos->right_fork);
 }
