@@ -96,13 +96,13 @@ void	philo_is_eating(t_philos *philos)
 		pthread_mutex_unlock(philos->right_fork);
 		return ;
 	}
-	pthread_mutex_lock(philos->lock_philo); //segfault
 	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
+	pthread_mutex_lock(&philos->lock_philo); 
 	write_message("is eating", philos);
-	philos->meals_eaten++; //segfault
+	philos->meals_eaten++; 
 	wait_given_time(philos, philos->data->time_to_eat);
-	pthread_mutex_unlock(philos->lock_philo); //segfault
+	pthread_mutex_unlock(&philos->lock_philo); 
 	pthread_mutex_unlock(philos->left_fork);
 	pthread_mutex_unlock(philos->right_fork);
 }
@@ -112,6 +112,8 @@ void	*routine(void *arg)
 	t_philos	*philos;
 
 	philos = (t_philos *)arg;
+	if (philos->philo_id % 2 == 0) // MOVE IT ELSEWHERE???
+		wait_given_time(philos, 1); // to avoid all philos to take same fork
 	while (!philos->data->is_dead)
 	{
 		if (philo_is_dead(philos))

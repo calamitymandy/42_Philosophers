@@ -31,7 +31,7 @@ typedef struct s_philos
 	int					is_eating;
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		*left_fork;
-	pthread_mutex_t		*lock_philo; //segfault
+	pthread_mutex_t		lock_philo;
 }t_philos;
 
 typedef struct s_init_data
