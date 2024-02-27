@@ -98,7 +98,9 @@ void	philo_is_eating(t_philos *philos)
 	}
 	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
-	pthread_mutex_lock(&philos->lock_philo); 
+	pthread_mutex_lock(&philos->lock_philo);
+	philos->philo_expiring_time = get_time() + philos->data->time_to_die;
+	philos->last_meal = get_time();
 	write_message("is eating", philos);
 	philos->meals_eaten++; 
 	wait_given_time(philos, philos->data->time_to_eat);
@@ -112,8 +114,11 @@ void	*routine(void *arg)
 	t_philos	*philos;
 
 	philos = (t_philos *)arg;
+	philos->philo_expiring_time = get_time() + philos->data->time_to_die;
 	if (philos->philo_id % 2 == 0) // MOVE IT ELSEWHERE???
 		wait_given_time(philos, 1); // to avoid all philos to take same fork
+	// if (pthread_create(&philos->monitor, NULL, routine_of_monitor, (void *)philos))
+	// 	return ((void *)1);
 	while (!philos->data->is_dead)
 	{
 		if (philo_is_dead(philos))
@@ -126,6 +131,8 @@ void	*routine(void *arg)
 			return (0);
 		write_message("is thinking", philos);
 	}
+	// if (pthread_join(philos->monitor, NULL))
+	// 	return ((void *)1);
 	return ((void *)arg);
 }
 
@@ -139,7 +146,38 @@ void	init_philos(t_data *data)
 		data->philos[i].philo_id = i + 1;
 		data->philos[i].meals_eaten = 0;
 		data->philos[i].is_eating = 0;
+		data->philos[i].last_meal = 0;
 		i++;
+	}
+}
+
+void	look_n_check(t_data *data)
+{
+	int	i;
+	int time;
+	int	exit;
+
+	exit = 0;
+	while (1)
+	{
+		i = 0;
+		while (i < data->nb_of_philos)
+		{
+			pthread_mutex_lock(&data->philos[i].lock_philo);
+			time = get_time();
+			printf("LAST MEAL %d\n", data->philos[i].last_meal); //CHECK THIS FUNCTION!!!!
+			if (time - data->philos[i].last_meal > data->time_to_die)
+			{
+				write_message("is dead", data->philos);
+				exit = 1;
+				pthread_mutex_unlock(&data->philos[i].lock_philo);
+				break ;
+			}
+			pthread_mutex_unlock(&data->philos[i].lock_philo);
+			i++;
+		}
+		if (exit)
+			break ;
 	}
 }
 
@@ -155,6 +193,7 @@ void	start_simulation(t_data *data)
 		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
 		i++;
 	}
+	look_n_check(data);
 	i = 0;
 	while (i < data->nb_of_philos)
 	{

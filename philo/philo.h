@@ -24,11 +24,12 @@ typedef struct s_philos
 {
 	struct s_init_data	*data;
 	pthread_t			thread_id; //used to store the identifier of a thread
+	pthread_t			monitor; //store thread id of the monitor
 	int					philo_id;
-	//pthread_mutex_t		lock; //fake simulation
-	//int					count; //fake simulation
+	int					last_meal;
 	int					meals_eaten;
 	int					is_eating;
+	long				philo_expiring_time;
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		lock_philo;
