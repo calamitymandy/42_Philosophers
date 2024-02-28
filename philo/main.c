@@ -165,13 +165,15 @@ void	look_n_check(t_data *data)
 		{
 			pthread_mutex_lock(&data->philos[i].lock_philo);
 			time = get_time();
-			printf("LAST MEAL %d\n", data->philos[i].last_meal); //CHECK THIS FUNCTION!!!!
-			if (time - data->philos[i].last_meal > data->time_to_die)
+			//printf("TIME - LAST MEAL %lld\n", time - (data->philos[i].last_meal)); //CHECK THIS FUNCTION!!!!
+			//printf("data->time_to_die %d\n", data->time_to_die); //CHECK THIS FUNCTION!!!!
+			if ((time - (data->philos[i].last_meal) > data->time_to_die))
 			{
-				write_message("is dead", data->philos);
-				exit = 1;
+				write_message("IS DEAD \n\n", data->philos);
+				exit = 1; // is this necessary????
+				data->is_dead = 1; //implement that part to stop loop if one is dead!!!!
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
-				break ;
+				return ((void)1);
 			}
 			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
@@ -242,6 +244,5 @@ int	main(int argc, char **argv)
 		return (1);
 	data.start_time = get_time();
 	start_simulation(&data);
-	//printf("%lld\n", data.start_time);
 	return (0);
 }

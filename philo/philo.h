@@ -26,7 +26,7 @@ typedef struct s_philos
 	pthread_t			thread_id; //used to store the identifier of a thread
 	pthread_t			monitor; //store thread id of the monitor
 	int					philo_id;
-	int					last_meal;
+	long long					last_meal;
 	int					meals_eaten;
 	int					is_eating;
 	long				philo_expiring_time;
