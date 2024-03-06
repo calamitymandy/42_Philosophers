@@ -29,7 +29,6 @@ typedef struct s_philos
 	long long					last_meal;
 	int					meals_eaten;
 	int					is_eating;
-	long				philo_expiring_time;
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		lock_philo;

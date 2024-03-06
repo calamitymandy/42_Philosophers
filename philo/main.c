@@ -99,7 +99,6 @@ void	philo_is_eating(t_philos *philos)
 	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
 	pthread_mutex_lock(&philos->lock_philo);
-	philos->philo_expiring_time = get_time() + philos->data->time_to_die;
 	philos->last_meal = get_time();
 	write_message("is eating", philos);
 	philos->meals_eaten++; 
@@ -114,7 +113,6 @@ void	*routine(void *arg)
 	t_philos	*philos;
 
 	philos = (t_philos *)arg;
-	philos->philo_expiring_time = get_time() + philos->data->time_to_die;
 	if (philos->philo_id % 2 == 0) // MOVE IT ELSEWHERE???
 		wait_given_time(philos, 1); // to avoid all philos to take same fork
 	// if (pthread_create(&philos->monitor, NULL, routine_of_monitor, (void *)philos))
@@ -124,6 +122,11 @@ void	*routine(void *arg)
 		if (philo_is_dead(philos))
 			return (0);
 		philo_is_eating(philos);
+		if (philos->meals_eaten == philos->data->nb_of_meals) // MAKE IT STOP WITHOUT SAYING PHILO 1 IS DEAD!!!!
+		{
+			printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
+			return (0);
+		}
 		if (philo_is_dead(philos))
 			return (0);
 		philo_is_sleeping(philos);
@@ -146,40 +149,34 @@ void	init_philos(t_data *data)
 		data->philos[i].philo_id = i + 1;
 		data->philos[i].meals_eaten = 0;
 		data->philos[i].is_eating = 0;
-		data->philos[i].last_meal = 0;
+		data->philos[i].last_meal = get_time();
 		i++;
 	}
 }
 
-void	look_n_check(t_data *data)
+void	look_n_check(t_data *data) //NEED TO DO STATIC???
 {
 	int	i;
-	int time;
-	int	exit;
 
-	exit = 0;
 	while (1)
 	{
 		i = 0;
 		while (i < data->nb_of_philos)
 		{
 			pthread_mutex_lock(&data->philos[i].lock_philo);
-			time = get_time();
-			//printf("TIME - LAST MEAL %lld\n", time - (data->philos[i].last_meal)); //CHECK THIS FUNCTION!!!!
-			//printf("data->time_to_die %d\n", data->time_to_die); //CHECK THIS FUNCTION!!!!
-			if ((time - (data->philos[i].last_meal) > data->time_to_die))
+			if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
 			{
-				write_message("IS DEAD \n\n", data->philos);
-				exit = 1; // is this necessary????
-				data->is_dead = 1; //implement that part to stop loop if one is dead!!!!
+				//printf("LAST MEAL %lld\n", data->philos[i].last_meal);
+				//printf("TIME - LAST MEAL %lld\n", time - (data->philos[i].last_meal));
+				//printf("data->time_to_die %d\n", data->time_to_die);
+				write_message("DIED", data->philos);
+				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
 				return ((void)1);
 			}
 			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
 		}
-		if (exit)
-			break ;
 	}
 }
 
