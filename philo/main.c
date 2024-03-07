@@ -154,29 +154,41 @@ void	init_philos(t_data *data)
 	}
 }
 
-void	look_n_check(t_data *data) //NEED TO DO STATIC???
+void	look_n_check(t_data *data) 
 {
 	int	i;
-
+	int	stop;
+	
+	stop = 0;
 	while (1)
 	{
 		i = 0;
 		while (i < data->nb_of_philos)
 		{
 			pthread_mutex_lock(&data->philos[i].lock_philo);
-			if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
+			if (data->philos->meals_eaten == data->nb_of_meals)
+				{
+				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
+				stop = 1;
+				pthread_mutex_unlock(&data->philos[i].lock_philo);
+				return ((void)1);
+				}
+			else if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
 			{
 				//printf("LAST MEAL %lld\n", data->philos[i].last_meal);
 				//printf("TIME - LAST MEAL %lld\n", time - (data->philos[i].last_meal));
 				//printf("data->time_to_die %d\n", data->time_to_die);
 				write_message("DIED", data->philos);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
+				stop = 1;
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
 				return ((void)1);
 			}
 			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
 		}
+		if (stop)
+			break ;
 	}
 }
 
@@ -240,6 +252,7 @@ int	main(int argc, char **argv)
 	if (init_forks(&data))
 		return (1);
 	data.start_time = get_time();
+	//system("leaks philo");
 	start_simulation(&data);
 	return (0);
 }

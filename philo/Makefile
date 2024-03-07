@@ -16,8 +16,9 @@ GREEN =			\033[0;92m
 
 NAME = philo
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -pthread -g3 
-#-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -pthread -g3
+#-fsanitize=address 
+#-fsanitize=thread
 
 SRC = main.c utils.c
 
