@@ -167,12 +167,12 @@ void	look_n_check(t_data *data)
 		{
 			pthread_mutex_lock(&data->philos[i].lock_philo);
 			if (data->philos->meals_eaten == data->nb_of_meals)
-				{
+			{
 				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
 				stop = 1;
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
 				return ((void)1);
-				}
+			}
 			else if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
 			{
 				//printf("LAST MEAL %lld\n", data->philos[i].last_meal);
