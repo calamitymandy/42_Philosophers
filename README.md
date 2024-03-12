@@ -69,7 +69,7 @@ with a mutex for each of them.
 ### Step 1: Checking input
 ### Step 2: Creating structures
 ### Step 3: Initialize and allocate
-### Step 4: philo's routine, supervisor and monitor
+### Step 4: philo's routine and monitor
 ### Step 5: Clean memory
 
 ## CREATE THREADS
@@ -114,3 +114,25 @@ The pthread_join function returns 0 on success or another integer to represent a
 It is noteworthy that one can only wait for the end of a specific thread. There is no way to wait for the first thread to finish without dealing with its identifier, as the wait function of a child process does.
 
 In this project, we want to ensure that the main thread of our program waits for each philosopher thread to finish its execution. This way, we can free up memory and safely terminate the program.
+
+## TESTS
+
+### End with death or enough eaten
+Test: [1 800 200 200] | a philo should die
+Test: [4 310 200 100] | a philo should die
+Test: [4 200 205 200] | a philo should die
+Test: [5 800 200 200 7] | no one should die, simulation should stop after 7 eats
+Test: [4 410 200 200 10] | no one should die, simulation should stop after 10 eats
+
+### Incorrect arguments
+Test: [-5 600 200 200] | should error and not run (no crashing)
+Test: [4 -5 200 200] | should error and not run (no crashing)
+Test: [4 600 -5 200] | should error and not run (no crashing)
+Test: [4 600 200 -5] | should error and not run (no crashing)
+
+### Philosophers should NOT die
+Test: [5 600 150 150] | no one should die
+Test: [4 410 200 200] | no one should die
+Test: [100 800 200 200] | no one should die
+Test: [105 800 200 200] | no one should die
+Test: [200 800 200 200] | no one should die

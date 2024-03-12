@@ -12,16 +12,31 @@
 
 /* system("leaks philo"); */
 
+/*
+Problemas o Mejoras:
+
+INIT of mutexes:
+check if all pthread_mutex_init are initialized!!
+
+Manejo de Memoria:
+Aunque se verifica si la asignación de memoria es exitosa, no se libera la 
+memoria reservada en caso de un error posterior.
+
+Manejo de Errores:
+En caso de que se detecte un error durante la inicialización o ejecución del
+programa, sería útil implementar un mecanismo de manejo de errores más robusto, 
+como la liberación adecuada de la memoria reservada y una salida clara indicando 
+el motivo del error.
+
+Optimización del Ciclo Principal:
+El ciclo principal (look_n_check()) puede optimizarse para salir tan pronto 
+como se detecte que un filósofo ha completado todas sus comidas o ha muerto. 
+Esto puede mejorar la eficiencia del programa y reducir el tiempo de ejecución.*/
+
 #include "philo.h"
 
 int	mallocating(t_data *data)
 {
-	// data->thread_id = malloc(sizeof(pthread_t) * data->nb_of_philos);
-	// if (!data->thread_id)
-	// {
-	// 	printf("Malloc error: threads ids");
-	// 	return (1);
-	// }
 	data->philos = malloc(sizeof(t_philos) * data->nb_of_philos);
 	if (!data->philos)
 	{
@@ -70,13 +85,13 @@ int	init_forks(t_data *data)
 
 int	philo_is_dead(t_philos *philos)
 {
-	pthread_mutex_lock(&philos->data->lock);
+	pthread_mutex_lock(&philos->data->lock_dead);
 	if (philos->data->is_dead)
 	{
-		pthread_mutex_unlock(&philos->data->lock);
+		pthread_mutex_unlock(&philos->data->lock_dead);
 		return (1);
 	}
-	pthread_mutex_unlock(&philos->data->lock);
+	pthread_mutex_unlock(&philos->data->lock_dead);
 	return (0);
 }
 
@@ -115,14 +130,12 @@ void	*routine(void *arg)
 	philos = (t_philos *)arg;
 	if (philos->philo_id % 2 == 0) // MOVE IT ELSEWHERE???
 		wait_given_time(philos, 1); // to avoid all philos to take same fork
-	// if (pthread_create(&philos->monitor, NULL, routine_of_monitor, (void *)philos))
-	// 	return ((void *)1);
 	while (!philos->data->is_dead)
 	{
 		if (philo_is_dead(philos))
 			return (0);
 		philo_is_eating(philos);
-		if (philos->meals_eaten == philos->data->nb_of_meals) // MAKE IT STOP WITHOUT SAYING PHILO 1 IS DEAD!!!!
+		if (philos->meals_eaten == philos->data->nb_of_meals)
 		{
 			printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
 			return (0);
@@ -134,8 +147,6 @@ void	*routine(void *arg)
 			return (0);
 		write_message("is thinking", philos);
 	}
-	// if (pthread_join(philos->monitor, NULL))
-	// 	return ((void *)1);
 	return ((void *)arg);
 }
 
@@ -171,18 +182,16 @@ void	look_n_check(t_data *data)
 				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
 				stop = 1;
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
-				return ((void)1);
+				break ;
 			}
 			else if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
 			{
-				//printf("LAST MEAL %lld\n", data->philos[i].last_meal);
-				//printf("TIME - LAST MEAL %lld\n", time - (data->philos[i].last_meal));
-				//printf("data->time_to_die %d\n", data->time_to_die);
-				write_message("DIED", data->philos);
+				write_message("died", data->philos);
+				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
+				pthread_mutex_unlock(&data->lock_dead);
 				stop = 1;
-				pthread_mutex_unlock(&data->philos[i].lock_philo);
-				return ((void)1);
+				break ;
 			}
 			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
@@ -230,9 +239,7 @@ int	start_init(char **argv, t_data *data)
 		return (1);
 	}
 	data->is_dead = 0;
-	//data->finito = 0;
-	//pthread_mutex_init(&data->msg, NULL);
-	//pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->lock_dead, NULL);
 	return (0);
 }
 
@@ -252,7 +259,6 @@ int	main(int argc, char **argv)
 	if (init_forks(&data))
 		return (1);
 	data.start_time = get_time();
-	//system("leaks philo");
 	start_simulation(&data);
 	return (0);
 }
