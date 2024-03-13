@@ -69,6 +69,7 @@ void	write_message(char *str, t_philos *philos)
  */
 void	wait_given_time(t_philos *philos, int given_time)
 {
+	(void)philos;
 	int	start_time;
 
 	start_time = get_time();

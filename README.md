@@ -118,21 +118,21 @@ In this project, we want to ensure that the main thread of our program waits for
 ## TESTS
 
 ### End with death or enough eaten
-Test: [1 800 200 200] | a philo should die
-Test: [4 310 200 100] | a philo should die
-Test: [4 200 205 200] | a philo should die
-Test: [5 800 200 200 7] | no one should die, simulation should stop after 7 eats
-Test: [4 410 200 200 10] | no one should die, simulation should stop after 10 eats
+./philo 1 800 200 200 | a philo should die
+./philo 4 310 200 100 | a philo should die
+./philo 4 200 205 200 | a philo should die
+./philo 5 800 200 200 7 | no one should die, simulation should stop after 7 eats
+./philo 4 410 200 200 10 | no one should die, simulation should stop after 10 eats
 
 ### Incorrect arguments
-Test: [-5 600 200 200] | should error and not run (no crashing)
-Test: [4 -5 200 200] | should error and not run (no crashing)
-Test: [4 600 -5 200] | should error and not run (no crashing)
-Test: [4 600 200 -5] | should error and not run (no crashing)
+./philo -5 600 200 200 | should error and not run (no crashing)
+./philo 4 -5 200 200 | should error and not run (no crashing)
+./philo 4 600 -5 200 | should error and not run (no crashing)
+./philo 4 600 200 -5 | should error and not run (no crashing)
 
 ### Philosophers should NOT die
-Test: [5 600 150 150] | no one should die
-Test: [4 410 200 200] | no one should die
-Test: [100 800 200 200] | no one should die
-Test: [105 800 200 200] | no one should die
-Test: [200 800 200 200] | no one should die
+./philo 5 600 150 150 | no one should die
+./philo 4 410 200 200 | no one should die
+./philo 100 800 200 200 | no one should die
+./philo 105 800 200 200 | no one should die
+./philo 200 800 200 200 | no one should die

@@ -16,11 +16,11 @@ GREEN =			\033[0;92m
 
 NAME = philo
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -pthread -g3
+CFLAGS = -Wall -Wextra -Werror -pthread -g3 -fsanitize=thread
 #-fsanitize=address 
 #-fsanitize=thread
 
-SRC = main.c utils.c
+SRC = main.c init.c actions.c utils.c
 
 OBJ = ${SRC:.c=.o}
 

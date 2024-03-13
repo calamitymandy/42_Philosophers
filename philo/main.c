@@ -57,72 +57,6 @@ int	mallocating(t_data *data)
 	return (0);
 }
 
-/*
- * The function initializes the forks for a dining philosophers problem:
- * - 1st while loop to initialize the mutex for each fork.
- * - Then assign left[0] and right[nb_of_philos -1] forks for the 1st philo
- * - 2nd loop to initialize left and right forks for every other philosopher.
- * It assigns the left fork to the current philosopher as the fork at index `i`,
- * and the right fork as the fork at index `i - 1`.
- */
-int	init_forks(t_data *data)
-{
-	int	i;
-
-	i = -1;
-	while (++i < data->nb_of_philos)
-		pthread_mutex_init(&data->forks[i], NULL);
-	data->philos[0].left_fork = &data->forks[0];
-	data->philos[0].right_fork = &data->forks[data->nb_of_philos -1];
-	i = 0;
-	while (++i < data->nb_of_philos)
-	{
-		data->philos[i].left_fork = &data->forks[i];
-		data->philos[i].right_fork = &data->forks[i - 1];
-	}
-	return (0);
-}
-
-int	philo_is_dead(t_philos *philos)
-{
-	pthread_mutex_lock(&philos->data->lock_dead);
-	if (philos->data->is_dead)
-	{
-		pthread_mutex_unlock(&philos->data->lock_dead);
-		return (1);
-	}
-	pthread_mutex_unlock(&philos->data->lock_dead);
-	return (0);
-}
-
-void	philo_is_sleeping(t_philos *philos)
-{
-	write_message("is sleeping", philos);
-	wait_given_time(philos, philos->data->time_to_sleep);
-}
-
-void	philo_is_eating(t_philos *philos)
-{
-	pthread_mutex_lock(philos->right_fork);
-	write_message("has taken right fork", philos);
-	if (philos->data->nb_of_philos == 1)
-	{
-		wait_given_time(philos, philos->data->time_to_die);
-		pthread_mutex_unlock(philos->right_fork);
-		return ;
-	}
-	pthread_mutex_lock(philos->left_fork);
-	write_message("has taken left fork", philos);
-	pthread_mutex_lock(&philos->lock_philo);
-	philos->last_meal = get_time();
-	write_message("is eating", philos);
-	philos->meals_eaten++; 
-	wait_given_time(philos, philos->data->time_to_eat);
-	pthread_mutex_unlock(&philos->lock_philo); 
-	pthread_mutex_unlock(philos->left_fork);
-	pthread_mutex_unlock(philos->right_fork);
-}
-
 void	*routine(void *arg)
 {
 	t_philos	*philos;
@@ -134,6 +68,12 @@ void	*routine(void *arg)
 	{
 		if (philo_is_dead(philos))
 			return (0);
+		if (philos->data->nb_of_philos == 1)
+		{
+			write_message("has taken left fork", philos);
+			wait_given_time(philos, philos->data->time_to_die);
+			return (0);
+		}
 		philo_is_eating(philos);
 		if (philos->meals_eaten == philos->data->nb_of_meals)
 		{
@@ -150,21 +90,6 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
-void	init_philos(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_of_philos)
-	{
-		data->philos[i].philo_id = i + 1;
-		data->philos[i].meals_eaten = 0;
-		data->philos[i].is_eating = 0;
-		data->philos[i].last_meal = get_time();
-		i++;
-	}
-}
-
 void	look_n_check(t_data *data) 
 {
 	int	i;
@@ -176,20 +101,26 @@ void	look_n_check(t_data *data)
 		i = 0;
 		while (i < data->nb_of_philos)
 		{
+			pthread_mutex_lock(&data->philos[i].las_meal);
+			long long tmp_lastmeal = data->philos[i].last_meal;
+			pthread_mutex_unlock(&data->philos[i].las_meal);
+
 			pthread_mutex_lock(&data->philos[i].lock_philo);
-			if (data->philos->meals_eaten == data->nb_of_meals)
+			/*if (data->philos->meals_eaten == data->nb_of_meals)
 			{
 				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
 				stop = 1;
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
 				break ;
 			}
-			else if ((get_time() - (data->philos[i].last_meal) > data->time_to_die))
+			
+			else */if ((get_time() - (tmp_lastmeal) > data->time_to_die))
 			{
-				write_message("died", data->philos);
 				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				pthread_mutex_unlock(&data->lock_dead);
+				printf("%lld philosopher %d %s\n", get_time() 
+					- data->start_time, data->philos->philo_id, "died");
 				stop = 1;
 				break ;
 			}
@@ -220,27 +151,6 @@ void	start_simulation(t_data *data)
 		pthread_join(data->philos[i].thread_id, NULL);
 		i++;
 	}
-}
-
-int	start_init(char **argv, t_data *data)
-{
-	data->nb_of_philos = positive_atoi(argv[1]);
-	data->time_to_die = positive_atoi(argv[2]);
-	data->time_to_eat = positive_atoi(argv[3]);
-	data->time_to_sleep = positive_atoi(argv[4]);
-	data->nb_of_meals = -1;
-	if (argv[5])
-		data->nb_of_meals = positive_atoi(argv[5]);
-	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
-		|| data->time_to_die < 60 || data->time_to_eat < 60
-		|| data->time_to_sleep < 60 || data->nb_of_meals < -1)
-	{
-		printf("Incorrect arguments");
-		return (1);
-	}
-	data->is_dead = 0;
-	pthread_mutex_init(&data->lock_dead, NULL);
-	return (0);
 }
 
 int	main(int argc, char **argv)

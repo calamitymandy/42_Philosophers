@@ -32,6 +32,7 @@ typedef struct s_philos
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		lock_philo;
+	pthread_mutex_t		las_meal;
 }t_philos;
 
 typedef struct s_init_data
@@ -49,13 +50,20 @@ typedef struct s_init_data
 	t_philos			*philos;
 }t_data;
 
-/*MAIN*/
-int		philo_is_dead(t_philos *philos);
-
 /*UTILS*/
 int		positive_atoi(const char *str);
 int		get_time(void);
 void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
+
+/*ACTIONS*/
+int		philo_is_dead(t_philos *philos);
+void	philo_is_sleeping(t_philos *philos);
+void	philo_is_eating(t_philos *philos);
+
+/*INIT*/
+int		start_init(char **argv, t_data *data);
+void	init_philos(t_data *data);
+int		init_forks(t_data *data);
 
 #endif
