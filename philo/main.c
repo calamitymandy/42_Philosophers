@@ -12,26 +12,17 @@
 
 /* system("leaks philo"); */
 
-/*
-Problemas o Mejoras:
-
-INIT of mutexes:
-check if all pthread_mutex_init are initialized!!
+/* Problemas o Mejoras:
 
 Manejo de Memoria:
-Aunque se verifica si la asignación de memoria es exitosa, no se libera la 
-memoria reservada en caso de un error posterior.
+Liberar la memoria reservada.
 
 Manejo de Errores:
 En caso de que se detecte un error durante la inicialización o ejecución del
 programa, sería útil implementar un mecanismo de manejo de errores más robusto, 
 como la liberación adecuada de la memoria reservada y una salida clara indicando 
 el motivo del error.
-
-Optimización del Ciclo Principal:
-El ciclo principal (look_n_check()) puede optimizarse para salir tan pronto 
-como se detecte que un filósofo ha completado todas sus comidas o ha muerto. 
-Esto puede mejorar la eficiencia del programa y reducir el tiempo de ejecución.*/
+*/
 
 #include "philo.h"
 
@@ -93,41 +84,37 @@ void	*routine(void *arg)
 void	look_n_check(t_data *data) 
 {
 	int	i;
-	int	stop;
 	
-	stop = 0;
 	while (1)
 	{
 		i = 0;
-		while (i < data->nb_of_philos)
+		while (i < data->nb_of_philos && !philo_is_dead(data->philos))
 		{
-			pthread_mutex_lock(&data->philos[i].las_meal);
+			pthread_mutex_lock(&data->philos[i].lock_meal);
 			long long tmp_lastmeal = data->philos[i].last_meal;
-			pthread_mutex_unlock(&data->philos[i].las_meal);
+			pthread_mutex_unlock(&data->philos[i].lock_meal);
 
 			pthread_mutex_lock(&data->philos[i].lock_philo);
 			/*if (data->philos->meals_eaten == data->nb_of_meals)
 			{
 				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
-				stop = 1;
 				pthread_mutex_unlock(&data->philos[i].lock_philo);
 				break ;
 			}
 			
-			else */if ((get_time() - (tmp_lastmeal) > data->time_to_die))
+			else */if ((get_time() - tmp_lastmeal > data->time_to_die))
 			{
 				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				pthread_mutex_unlock(&data->lock_dead);
 				printf("%lld philosopher %d %s\n", get_time() 
 					- data->start_time, data->philos->philo_id, "died");
-				stop = 1;
 				break ;
 			}
 			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
 		}
-		if (stop)
+		if (philo_is_dead(data->philos))
 			break ;
 	}
 }

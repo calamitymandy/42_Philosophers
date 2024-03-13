@@ -30,6 +30,7 @@ int	start_init(char **argv, t_data *data)
 	}
 	data->is_dead = 0;
 	pthread_mutex_init(&data->lock_dead, NULL);
+	pthread_mutex_init(&data->lock, NULL);
 	return (0);
 }
 
@@ -64,7 +65,7 @@ int	init_forks(t_data *data)
 	while (++i < data->nb_of_philos)
 	{
 		pthread_mutex_init(&data->forks[i], NULL);
-		pthread_mutex_init(&data->philos[i].las_meal, NULL);
+		pthread_mutex_init(&data->philos[i].lock_meal, NULL);
 		pthread_mutex_init(&data->philos[i].lock_philo, NULL);
 	}
 	data->philos[0].left_fork = &data->forks[0];
