@@ -31,7 +31,6 @@ void	philo_is_eating(t_philos *philos)
 	pthread_mutex_lock(philos->left_fork);
 	write_message("has taken left fork", philos);
 	pthread_mutex_lock(&philos->lock_philo);
-
 	pthread_mutex_lock(&philos->lock_meal);
 	philos->last_meal = get_time();
 	pthread_mutex_unlock(&philos->lock_meal);

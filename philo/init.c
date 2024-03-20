@@ -30,7 +30,7 @@ int	start_init(char **argv, t_data *data)
 	}
 	data->is_dead = 0;
 	pthread_mutex_init(&data->lock_dead, NULL);
-    pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->lock, NULL);
 	return (0);
 }
 
