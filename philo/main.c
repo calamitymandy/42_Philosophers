@@ -81,20 +81,22 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
-void	look_n_check(t_data *data) 
+void	*look_n_check(t_data *data) 
 {
 	int	i;
-	
-	while (1)
+
+	while (!data->is_dead)
 	{
+		//usleep(10);
+		wait_given_time(data->philos, 1);
+		pthread_mutex_lock(&data->lock_dead);
 		i = 0;
-		while (i < data->nb_of_philos && !philo_is_dead(data->philos))
+		while (i < data->nb_of_philos)
 		{
 			pthread_mutex_lock(&data->philos[i].lock_meal);
 			long long tmp_lastmeal = data->philos[i].last_meal;
 			pthread_mutex_unlock(&data->philos[i].lock_meal);
 
-			pthread_mutex_lock(&data->philos[i].lock_philo);
 			/*if (data->philos->meals_eaten == data->nb_of_meals)
 			{
 				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
@@ -102,21 +104,19 @@ void	look_n_check(t_data *data)
 				break ;
 			}
 			
-			else */if ((get_time() - tmp_lastmeal > data->time_to_die))
+			else */
+			if ((get_time() - tmp_lastmeal > data->time_to_die))
 			{
-				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
-				pthread_mutex_unlock(&data->lock_dead);
 				printf("%lld philosopher %d %s\n", get_time() 
 					- data->start_time, data->philos->philo_id, "died");
 				break ;
 			}
-			pthread_mutex_unlock(&data->philos[i].lock_philo);
 			i++;
 		}
-		if (philo_is_dead(data->philos))
-			break ;
+		pthread_mutex_unlock(&data->lock_dead);
 	}
+	return NULL;
 }
 
 void	start_simulation(t_data *data)
