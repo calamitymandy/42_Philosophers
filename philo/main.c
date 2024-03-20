@@ -101,9 +101,9 @@ void	look_n_check(t_data *data)
 		i = 0;
 		while (i < data->nb_of_philos)
 		{
-			pthread_mutex_lock(&data->philos[i].las_meal);
+			pthread_mutex_lock(&data->philos[i].lock_meal);
 			long long tmp_lastmeal = data->philos[i].last_meal;
-			pthread_mutex_unlock(&data->philos[i].las_meal);
+			pthread_mutex_unlock(&data->philos[i].lock_meal);
 
 			pthread_mutex_lock(&data->philos[i].lock_philo);
 			/*if (data->philos->meals_eaten == data->nb_of_meals)

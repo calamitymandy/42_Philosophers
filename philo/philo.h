@@ -32,7 +32,7 @@ typedef struct s_philos
 	pthread_mutex_t		*right_fork;
 	pthread_mutex_t		*left_fork;
 	pthread_mutex_t		lock_philo;
-	pthread_mutex_t		las_meal;
+	pthread_mutex_t		lock_meal;
 }t_philos;
 
 typedef struct s_init_data
