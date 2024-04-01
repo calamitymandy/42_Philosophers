@@ -19,6 +19,7 @@ int	start_init(char **argv, t_data *data)
 	data->time_to_eat = positive_atoi(argv[3]);
 	data->time_to_sleep = positive_atoi(argv[4]);
 	data->nb_of_meals = -1;
+	data->nb_of_full_bellies = 0;
 	if (argv[5])
 		data->nb_of_meals = positive_atoi(argv[5]);
 	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
@@ -31,6 +32,7 @@ int	start_init(char **argv, t_data *data)
 	data->is_dead = 0;
 	pthread_mutex_init(&data->lock_dead, NULL);
 	pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->lock_full_bellies, NULL);
 	return (0);
 }
 

@@ -44,6 +44,8 @@ typedef struct s_init_data
 	int					nb_of_meals;
 	long long			start_time;
 	int					is_dead;
+	int					nb_of_full_bellies;
+	pthread_mutex_t		lock_full_bellies;
 	pthread_mutex_t		lock_dead;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		*forks;

@@ -61,14 +61,17 @@ void	*routine(void *arg)
 			return (0);
 		if (philos->data->nb_of_philos == 1)
 		{
-			write_message("has taken left fork", philos);
+			write_message("has taken the one and only fork", philos);
 			wait_given_time(philos, philos->data->time_to_die);
 			return (0);
 		}
 		philo_is_eating(philos);
 		if (philos->meals_eaten == philos->data->nb_of_meals)
 		{
+			pthread_mutex_lock(&philos->data->lock_full_bellies);
+			philos->data->nb_of_full_bellies++;
 			printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
+			pthread_mutex_lock(&philos->data->lock_full_bellies);
 			return (0);
 		}
 		if (philo_is_dead(philos))
@@ -83,38 +86,43 @@ void	*routine(void *arg)
 
 void	*look_n_check(t_data *data) 
 {
-	int	i;
-
-	while (!data->is_dead)
+	int			i;
+	int			someone_died;
+	int			nb_of_full_bellies;
+	long long	last_meal;
+	
+	pthread_mutex_lock(&data->lock_dead);
+	someone_died = data->is_dead;
+	pthread_mutex_unlock(&data->lock_dead);
+	while (!someone_died)
 	{
-		//usleep(10);
-		wait_given_time(data->philos, 1);
-		pthread_mutex_lock(&data->lock_dead);
 		i = 0;
 		while (i < data->nb_of_philos)
 		{
-			pthread_mutex_lock(&data->philos[i].lock_meal);
-			long long tmp_lastmeal = data->philos[i].last_meal;
-			pthread_mutex_unlock(&data->philos[i].lock_meal);
+			pthread_mutex_lock(&data->lock_full_bellies);
+			nb_of_full_bellies = data->nb_of_full_bellies;
+			pthread_mutex_unlock(&data->lock_full_bellies);
 
-			/*if (data->philos->meals_eaten == data->nb_of_meals)
+			if (data->nb_of_full_bellies == data->nb_of_philos)
 			{
-				printf("STOP SIMULATION / philo %d / i = %d data->philos->meals_eaten: %d\n", data->philos->philo_id, i, data->philos->meals_eaten);
-				pthread_mutex_unlock(&data->philos[i].lock_philo);
-				break ;
+				printf("MAKE IT STOP WHEN nb_of_full_bellies: %d == data->nb_of_philos %d bc ALL PHILOS have eaten ALL THEIR MEALS\n", nb_of_full_bellies, data->nb_of_philos);
+				return NULL;
 			}
-			
-			else */
-			if ((get_time() - tmp_lastmeal > data->time_to_die))
+			pthread_mutex_lock(&data->philos[i].lock_meal);
+			last_meal = data->philos[i].last_meal;
+			pthread_mutex_unlock(&data->philos[i].lock_meal);
+			if (get_time() - last_meal > data->time_to_die)
 			{
+				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
+				someone_died = 1;
+				pthread_mutex_lock(&data->lock_dead);
 				printf("%lld philosopher %d %s\n", get_time() 
 					- data->start_time, data->philos->philo_id, "died");
 				break ;
 			}
 			i++;
 		}
-		pthread_mutex_unlock(&data->lock_dead);
 	}
 	return NULL;
 }
