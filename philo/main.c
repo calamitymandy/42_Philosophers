@@ -102,8 +102,7 @@ void	*look_n_check(t_data *data)
 			pthread_mutex_lock(&data->lock_full_bellies);
 			nb_of_full_bellies = data->nb_of_full_bellies;
 			pthread_mutex_unlock(&data->lock_full_bellies);
-
-			if (data->nb_of_full_bellies == data->nb_of_philos)
+			if (nb_of_full_bellies == data->nb_of_philos)
 			{
 				printf("MAKE IT STOP WHEN nb_of_full_bellies: %d == data->nb_of_philos %d bc ALL PHILOS have eaten ALL THEIR MEALS\n", nb_of_full_bellies, data->nb_of_philos);
 				return NULL;
