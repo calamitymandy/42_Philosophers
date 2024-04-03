@@ -54,28 +54,31 @@ void	write_message(char *str, t_philos *philos)
 	if (!philo_is_dead(philos))
 	{
 		pthread_mutex_lock(&philos->data->lock);
-		printf("%lld philosopher %d %s\n", get_time() 
+		printf("%lld philosopher %d %s\n", get_time()
 			- philos->data->start_time, philos->philo_id, str);
 		pthread_mutex_unlock(&philos->data->lock);
 	}
 }
 
 /**
- * The function "wait_given_time" waits for a given amount of time or until a philosopher is dead.
+ * The function "wait_given_time" waits for a given amount of time or 
+ * until a philosopher is dead.
  * 
- * @param philos A pointer to a struct that contains information about the philosophers.
- * @param given_time The given_time parameter is the amount of time in milliseconds that the function
+ * @param philos A pointer to a struct that contains information about
+ * the philosophers.
+ * @param given_time The given_time parameter is the amount of time in
+ * milliseconds that the function
  * should wait for.
  */
 void	wait_given_time(t_philos *philos, int given_time)
 {
-	(void)philos;
 	int	start_time;
 
+	(void)philos;
 	start_time = get_time();
-	while ((get_time() - start_time) < given_time &&
-		!philo_is_dead(philos))
-		{
-			usleep(100);
-		}
+	while ((get_time() - start_time) < given_time
+		&& !philo_is_dead(philos))
+	{
+		usleep(100);
+	}
 }

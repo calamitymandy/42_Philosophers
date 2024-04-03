@@ -40,6 +40,7 @@ int	mallocating(t_data *data)
 		printf("Malloc error: forks");
 		return (1);
 	}
+	data->taken_fork = malloc(sizeof(char) * data->nb_of_philos);
 	if ((!data->philos || !data->forks) && data)
 	{
 		//TO DO exit & destroy function
@@ -71,7 +72,7 @@ void	*routine(void *arg)
 			pthread_mutex_lock(&philos->data->lock_full_bellies);
 			philos->data->nb_of_full_bellies++;
 			printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
-			pthread_mutex_lock(&philos->data->lock_full_bellies);
+			pthread_mutex_unlock(&philos->data->lock_full_bellies);
 			return (0);
 		}
 		if (philo_is_dead(philos))
@@ -84,13 +85,13 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
-void	*look_n_check(t_data *data) 
+void	*look_n_check(t_data *data)
 {
 	int			i;
 	int			someone_died;
 	int			nb_of_full_bellies;
 	long long	last_meal;
-	
+
 	pthread_mutex_lock(&data->lock_dead);
 	someone_died = data->is_dead;
 	pthread_mutex_unlock(&data->lock_dead);
@@ -105,7 +106,7 @@ void	*look_n_check(t_data *data)
 			if (nb_of_full_bellies == data->nb_of_philos)
 			{
 				printf("MAKE IT STOP WHEN nb_of_full_bellies: %d == data->nb_of_philos %d bc ALL PHILOS have eaten ALL THEIR MEALS\n", nb_of_full_bellies, data->nb_of_philos);
-				return NULL;
+				return (NULL);
 			}
 			pthread_mutex_lock(&data->philos[i].lock_meal);
 			last_meal = data->philos[i].last_meal;
@@ -116,14 +117,14 @@ void	*look_n_check(t_data *data)
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				someone_died = 1;
 				pthread_mutex_lock(&data->lock_dead);
-				printf("%lld philosopher %d %s\n", get_time() 
+				printf("%lld philosopher %d %s\n", get_time()
 					- data->start_time, data->philos->philo_id, "died");
 				break ;
 			}
 			i++;
 		}
 	}
-	return NULL;
+	return (NULL);
 }
 
 void	start_simulation(t_data *data)
@@ -135,7 +136,8 @@ void	start_simulation(t_data *data)
 	while (i < data->nb_of_philos)
 	{
 		data->philos[i].data = data; // Set the data field to the main data structure
-		pthread_create(&data->philos[i].thread_id, NULL, routine, (void *)&data->philos[i]);
+		pthread_create(&data->philos[i].thread_id, NULL, routine,
+			(void *)&data->philos[i]);
 		i++;
 	}
 	look_n_check(data);

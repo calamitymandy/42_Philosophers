@@ -29,11 +29,10 @@ typedef struct s_philos
 	long long			last_meal;
 	int					meals_eaten;
 	int					is_eating;
-	pthread_mutex_t		*right_fork;
-	pthread_mutex_t		*left_fork;
+	int					forks;
 	pthread_mutex_t		lock_philo;
 	pthread_mutex_t		lock_meal;
-}t_philos;
+}	t_philos;
 
 typedef struct s_init_data
 {
@@ -45,13 +44,13 @@ typedef struct s_init_data
 	long long			start_time;
 	int					is_dead;
 	int					nb_of_full_bellies;
-	
+	char				*taken_fork;
 	pthread_mutex_t		lock_dead;
 	pthread_mutex_t		lock_full_bellies;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		*forks;
 	t_philos			*philos;
-}t_data;
+}	t_data;
 
 /*UTILS*/
 int		positive_atoi(const char *str);
