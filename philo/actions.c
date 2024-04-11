@@ -24,7 +24,7 @@ int	philo_is_dead(t_philos *philos)
 	return (0);
 }
 
-void	is_fork_available(t_philos *philos, int which)
+static void	is_fork_available(t_philos *philos, int which)
 {
 	pthread_mutex_lock(&philos->data->forks[which]);
 	if (philos->data->taken_fork[which] == 0)
@@ -36,7 +36,7 @@ void	is_fork_available(t_philos *philos, int which)
 	pthread_mutex_unlock(&philos->data->forks[which]);
 }
 
-void	drop_forks(t_philos *philos, int first_fork, int second_fork)
+static void	drop_forks(t_philos *philos, int first_fork, int second_fork)
 {
 	pthread_mutex_lock(&philos->data->forks[first_fork]);
 	philos->data->taken_fork[first_fork] = 0;

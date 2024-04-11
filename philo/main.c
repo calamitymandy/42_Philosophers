@@ -71,8 +71,8 @@ void	*routine(void *arg)
 		{
 			pthread_mutex_lock(&philos->data->lock_full_bellies);
 			philos->data->nb_of_full_bellies++;
-			printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
 			pthread_mutex_unlock(&philos->data->lock_full_bellies);
+			//printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
 			return (0);
 		}
 		if (philo_is_dead(philos))
@@ -116,7 +116,7 @@ void	*look_n_check(t_data *data)
 				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				someone_died = 1;
-				pthread_mutex_lock(&data->lock_dead);
+				pthread_mutex_unlock(&data->lock_dead);
 				printf("%lld philosopher %d %s\n", get_time()
 					- data->start_time, data->philos->philo_id, "died");
 				break ;
@@ -166,5 +166,8 @@ int	main(int argc, char **argv)
 		return (1);
 	data.start_time = get_time();
 	start_simulation(&data);
+	free(data.philos);
+	free(data.forks);
+	free(data.taken_fork);
 	return (0);
 }
