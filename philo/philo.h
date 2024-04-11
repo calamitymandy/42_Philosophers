@@ -57,6 +57,7 @@ int		positive_atoi(const char *str);
 int		get_time(void);
 void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
+void	write_dead(char *str, t_data *data);
 
 /*ACTIONS*/
 int		philo_is_dead(t_philos *philos);

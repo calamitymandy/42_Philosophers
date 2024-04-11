@@ -88,26 +88,17 @@ void	*routine(void *arg)
 void	*look_n_check(t_data *data)
 {
 	int			i;
-	int			someone_died;
-	int			nb_of_full_bellies;
 	long long	last_meal;
 
-	pthread_mutex_lock(&data->lock_dead);
-	someone_died = data->is_dead;
-	pthread_mutex_unlock(&data->lock_dead);
-	while (!someone_died)
+	while (!data->is_dead)
 	{
-		i = 0;
-		while (i < data->nb_of_philos)
+		i = -1;
+		while (++i < data->nb_of_philos)
 		{
 			pthread_mutex_lock(&data->lock_full_bellies);
-			nb_of_full_bellies = data->nb_of_full_bellies;
-			pthread_mutex_unlock(&data->lock_full_bellies);
-			if (nb_of_full_bellies == data->nb_of_philos)
-			{
-				printf("MAKE IT STOP WHEN nb_of_full_bellies: %d == data->nb_of_philos %d bc ALL PHILOS have eaten ALL THEIR MEALS\n", nb_of_full_bellies, data->nb_of_philos);
+			if (data->nb_of_full_bellies == data->nb_of_philos)
 				return (NULL);
-			}
+			pthread_mutex_unlock(&data->lock_full_bellies);
 			pthread_mutex_lock(&data->philos[i].lock_meal);
 			last_meal = data->philos[i].last_meal;
 			pthread_mutex_unlock(&data->philos[i].lock_meal);
@@ -115,13 +106,10 @@ void	*look_n_check(t_data *data)
 			{
 				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
-				someone_died = 1;
 				pthread_mutex_unlock(&data->lock_dead);
-				printf("%lld philosopher %d %s\n", get_time()
-					- data->start_time, data->philos->philo_id, "died");
+				write_dead("died", data);
 				break ;
 			}
-			i++;
 		}
 	}
 	return (NULL);

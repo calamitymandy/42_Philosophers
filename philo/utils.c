@@ -60,6 +60,14 @@ void	write_message(char *str, t_philos *philos)
 	}
 }
 
+void	write_dead(char *str, t_data *data)
+{
+	pthread_mutex_lock(&data->lock);
+		printf("%lld philosopher %d %s\n", get_time()
+			- data->start_time, data->philos->philo_id, str);
+		pthread_mutex_unlock(&data->lock);
+}
+
 /**
  * The function "wait_given_time" waits for a given amount of time or 
  * until a philosopher is dead.
