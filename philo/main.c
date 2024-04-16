@@ -95,10 +95,8 @@ void	*look_n_check(t_data *data)
 		i = -1;
 		while (++i < data->nb_of_philos)
 		{
-			pthread_mutex_lock(&data->lock_full_bellies);
-			if (data->nb_of_full_bellies == data->nb_of_philos)
+			if (check_nb_of_full_bellies(data))
 				return (NULL);
-			pthread_mutex_unlock(&data->lock_full_bellies);
 			pthread_mutex_lock(&data->philos[i].lock_meal);
 			last_meal = data->philos[i].last_meal;
 			pthread_mutex_unlock(&data->philos[i].lock_meal);
@@ -107,7 +105,7 @@ void	*look_n_check(t_data *data)
 				pthread_mutex_lock(&data->lock_dead);
 				data->is_dead = 1; //here to stop loop if one is dead!!!!
 				pthread_mutex_unlock(&data->lock_dead);
-				write_dead("died", data);
+				write_message("died", data->philos);
 				break ;
 			}
 		}

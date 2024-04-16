@@ -121,6 +121,7 @@ In this project, we want to ensure that the main thread of our program waits for
 ./philo 1 800 200 200 | a philo should die
 ./philo 4 310 200 100 | a philo should die
 ./philo 4 200 205 200 | a philo should die
+./philo 3 310 104 104 | a philo should die
 ./philo 5 800 200 200 7 | no one should die, simulation should stop after 7 eats
 ./philo 4 410 200 200 10 | no one should die, simulation should stop after 10 eats
 
@@ -136,3 +137,4 @@ In this project, we want to ensure that the main thread of our program waits for
 ./philo 100 800 200 200 | no one should die
 ./philo 105 800 200 200 | no one should die
 ./philo 200 800 200 200 | no one should die
+./philo 3 310 103 103 | no one should die

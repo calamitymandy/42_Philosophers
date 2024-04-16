@@ -51,6 +51,13 @@ int	get_time(void)
 
 void	write_message(char *str, t_philos *philos)
 {
+	if (*str == 'd')
+	{
+		pthread_mutex_lock(&philos->data->lock);
+			printf("%lld philosopher %d %s\n", get_time()
+				- philos->data->start_time, philos->philo_id, str);
+		pthread_mutex_unlock(&philos->data->lock);
+	}
 	if (!philo_is_dead(philos))
 	{
 		pthread_mutex_lock(&philos->data->lock);
@@ -58,14 +65,6 @@ void	write_message(char *str, t_philos *philos)
 			- philos->data->start_time, philos->philo_id, str);
 		pthread_mutex_unlock(&philos->data->lock);
 	}
-}
-
-void	write_dead(char *str, t_data *data)
-{
-	pthread_mutex_lock(&data->lock);
-		printf("%lld philosopher %d %s\n", get_time()
-			- data->start_time, data->philos->philo_id, str);
-		pthread_mutex_unlock(&data->lock);
 }
 
 /**
@@ -89,4 +88,13 @@ void	wait_given_time(t_philos *philos, int given_time)
 	{
 		usleep(100);
 	}
+}
+
+int	check_nb_of_full_bellies(t_data *data)
+{
+	pthread_mutex_lock(&data->lock_full_bellies);
+	if (data->nb_of_full_bellies == data->nb_of_philos)
+		return (1);
+	pthread_mutex_unlock(&data->lock_full_bellies);
+	return (0);
 }
