@@ -90,11 +90,4 @@ void	wait_given_time(t_philos *philos, int given_time)
 	}
 }
 
-int	check_nb_of_full_bellies(t_data *data)
-{
-	pthread_mutex_lock(&data->lock_full_bellies);
-	if (data->nb_of_full_bellies == data->nb_of_philos)
-		return (1);
-	pthread_mutex_unlock(&data->lock_full_bellies);
-	return (0);
-}
+

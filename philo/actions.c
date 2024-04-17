@@ -52,14 +52,14 @@ void	philo_is_eating(t_philos *philos)
 	int	first_fork;
 	int	second_fork;
 
-	first_fork = philos->philo_id -1;
+	first_fork = philos->philo_id - 1;
 	second_fork = philos->philo_id;
 	if (philos->philo_id == philos->data->nb_of_philos)
 		second_fork = 0;
 	if (philos->philo_id % 2 == 0)
 	{
 		first_fork = second_fork;
-		second_fork = philos->philo_id -1;
+		second_fork = philos->philo_id - 1;
 	}
 	while (philos->forks < 2)
 	{

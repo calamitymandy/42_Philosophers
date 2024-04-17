@@ -85,6 +85,18 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
+int	check_nb_of_full_bellies(t_data *data)
+{
+	int			nb_of_full_bellies;
+	
+	pthread_mutex_lock(&data->lock_full_bellies);
+	nb_of_full_bellies = data->nb_of_full_bellies;
+	pthread_mutex_unlock(&data->lock_full_bellies);
+	if (nb_of_full_bellies == data->nb_of_philos)
+		return (1);
+	return (0);
+}
+
 void	*look_n_check(t_data *data)
 {
 	int			i;
@@ -92,11 +104,11 @@ void	*look_n_check(t_data *data)
 
 	while (!data->is_dead)
 	{
+		if (check_nb_of_full_bellies(data))
+			return (NULL);
 		i = -1;
 		while (++i < data->nb_of_philos)
 		{
-			if (check_nb_of_full_bellies(data))
-				return (NULL);
 			pthread_mutex_lock(&data->philos[i].lock_meal);
 			last_meal = data->philos[i].last_meal;
 			pthread_mutex_unlock(&data->philos[i].lock_meal);
