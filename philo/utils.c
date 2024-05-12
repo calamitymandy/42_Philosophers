@@ -54,8 +54,8 @@ void	write_message(char *str, t_philos *philos)
 	if (*str == 'd')
 	{
 		pthread_mutex_lock(&philos->data->lock);
-			printf("%lld philosopher %d %s\n", get_time()
-				- philos->data->start_time, philos->philo_id, str);
+		printf("%lld philosopher %d %s\n", get_time()
+			- philos->data->start_time, philos->philo_id, str);
 		pthread_mutex_unlock(&philos->data->lock);
 	}
 	if (!philo_is_dead(philos))
@@ -90,4 +90,15 @@ void	wait_given_time(t_philos *philos, int given_time)
 	}
 }
 
-
+/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
+int	all_have_eaten(t_philos *philos)
+{
+	if (philos->meals_eaten == philos->data->nb_of_meals)
+	{
+		pthread_mutex_lock(&philos->data->lock_full_bellies);
+		philos->data->nb_of_full_bellies++;
+		pthread_mutex_unlock(&philos->data->lock_full_bellies);
+		return (0);
+	}
+	return (1);
+}

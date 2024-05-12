@@ -26,29 +26,6 @@ el motivo del error.
 
 #include "philo.h"
 
-int	mallocating(t_data *data)
-{
-	data->philos = malloc(sizeof(t_philos) * data->nb_of_philos);
-	if (!data->philos)
-	{
-		printf("Malloc error: philos");
-		return (1);
-	}
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_of_philos);
-	if (!data->forks)
-	{
-		printf("Malloc error: forks");
-		return (1);
-	}
-	data->taken_fork = malloc(sizeof(char) * data->nb_of_philos);
-	if ((!data->philos || !data->forks) && data)
-	{
-		//TO DO exit & destroy function
-		return (1);
-	}
-	return (0);
-}
-
 void	*routine(void *arg)
 {
 	t_philos	*philos;
@@ -60,21 +37,11 @@ void	*routine(void *arg)
 	{
 		if (philo_is_dead(philos))
 			return (0);
-		if (philos->data->nb_of_philos == 1)
-		{
-			write_message("has taken the one and only fork", philos);
-			wait_given_time(philos, philos->data->time_to_die);
+		if (!lone_philo(philos))
 			return (0);
-		}
 		philo_is_eating(philos);
-		if (philos->meals_eaten == philos->data->nb_of_meals)
-		{
-			pthread_mutex_lock(&philos->data->lock_full_bellies);
-			philos->data->nb_of_full_bellies++;
-			pthread_mutex_unlock(&philos->data->lock_full_bellies);
-//printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
+		if (!all_have_eaten(philos))
 			return (0);
-		}
 		if (philo_is_dead(philos))
 			return (0);
 		philo_is_sleeping(philos);
@@ -87,8 +54,8 @@ void	*routine(void *arg)
 
 int	check_nb_of_full_bellies(t_data *data)
 {
-	int			nb_of_full_bellies;
-	
+	int	nb_of_full_bellies;
+
 	pthread_mutex_lock(&data->lock_full_bellies);
 	nb_of_full_bellies = data->nb_of_full_bellies;
 	pthread_mutex_unlock(&data->lock_full_bellies);

@@ -57,6 +57,7 @@ int		positive_atoi(const char *str);
 int		get_time(void);
 void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
+int		all_have_eaten(t_philos *philos);
 
 /*ACTIONS*/
 int		philo_is_dead(t_philos *philos);
@@ -66,6 +67,8 @@ void	philo_is_eating(t_philos *philos);
 /*INIT*/
 int		start_init(char **argv, t_data *data);
 void	init_philos(t_data *data);
+int		mallocating(t_data *data);
 int		init_forks(t_data *data);
+int		lone_philo(t_philos *philos);
 
 #endif

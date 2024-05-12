@@ -52,6 +52,29 @@ void	init_philos(t_data *data)
 	}
 }
 
+int	mallocating(t_data *data)
+{
+	data->philos = malloc(sizeof(t_philos) * data->nb_of_philos);
+	if (!data->philos)
+	{
+		printf("Malloc error: philos");
+		return (1);
+	}
+	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_of_philos);
+	if (!data->forks)
+	{
+		printf("Malloc error: forks");
+		return (1);
+	}
+	data->taken_fork = malloc(sizeof(char) * data->nb_of_philos);
+	if ((!data->philos || !data->forks) && data)
+	{
+		//TO DO exit & destroy function
+		return (1);
+	}
+	return (0);
+}
+
 /*
  * The function initializes the forks for a dining philosophers problem:
  * - 1st while loop to initialize the mutex for each fork.
@@ -72,4 +95,15 @@ int	init_forks(t_data *data)
 		data->taken_fork[i] = 0;
 	}
 	return (0);
+}
+
+int	lone_philo(t_philos *philos)
+{
+	if (philos->data->nb_of_philos == 1)
+	{
+		write_message("has taken the one and only fork", philos);
+		wait_given_time(philos, philos->data->time_to_die);
+		return (0);
+	}
+	return (1);
 }
