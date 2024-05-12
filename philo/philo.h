@@ -32,7 +32,7 @@ typedef struct s_philos
 	int					forks;
 	pthread_mutex_t		lock_philo;
 	pthread_mutex_t		lock_meal;
-}	t_philos;
+}t_philos;
 
 typedef struct s_init_data
 {
@@ -43,22 +43,20 @@ typedef struct s_init_data
 	int					nb_of_meals;
 	long long			start_time;
 	int					is_dead;
-	int					nb_of_full_bellies;
 	char				*taken_fork;
-	pthread_mutex_t		lock_dead;
+	int					nb_of_full_bellies;
 	pthread_mutex_t		lock_full_bellies;
+	pthread_mutex_t		lock_dead;
 	pthread_mutex_t		lock;
 	pthread_mutex_t		*forks;
 	t_philos			*philos;
-}	t_data;
+}t_data;
 
 /*UTILS*/
 int		positive_atoi(const char *str);
 int		get_time(void);
 void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
-void	write_dead(char *str, t_data *data);
-int		check_nb_of_full_bellies(t_data *data);
 
 /*ACTIONS*/
 int		philo_is_dead(t_philos *philos);

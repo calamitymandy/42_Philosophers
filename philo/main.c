@@ -72,7 +72,7 @@ void	*routine(void *arg)
 			pthread_mutex_lock(&philos->data->lock_full_bellies);
 			philos->data->nb_of_full_bellies++;
 			pthread_mutex_unlock(&philos->data->lock_full_bellies);
-			//printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
+//printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);
 			return (0);
 		}
 		if (philo_is_dead(philos))

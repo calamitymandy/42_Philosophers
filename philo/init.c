@@ -18,8 +18,8 @@ int	start_init(char **argv, t_data *data)
 	data->time_to_die = positive_atoi(argv[2]);
 	data->time_to_eat = positive_atoi(argv[3]);
 	data->time_to_sleep = positive_atoi(argv[4]);
-	data->nb_of_meals = -1;
 	data->nb_of_full_bellies = 0;
+	data->nb_of_meals = -1;
 	if (argv[5])
 		data->nb_of_meals = positive_atoi(argv[5]);
 	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
