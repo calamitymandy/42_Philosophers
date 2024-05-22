@@ -20,17 +20,17 @@
 # include <pthread.h>
 # include <sys/time.h>
 
+/*
+	pthread_t			thread_id; //used to store the identifier of a thread
+*/
 typedef struct s_philos
 {
 	struct s_init_data	*data;
-	pthread_t			thread_id; //used to store the identifier of a thread
-	pthread_t			monitor; //store thread id of the monitor
+	pthread_t			thread_id;
 	int					philo_id;
 	long long			last_meal;
 	int					meals_eaten;
-	int					is_eating;
 	int					forks;
-	pthread_mutex_t		lock_philo;
 	pthread_mutex_t		lock_meal;
 }t_philos;
 
@@ -47,20 +47,20 @@ typedef struct s_init_data
 	int					nb_of_full_bellies;
 	pthread_mutex_t		lock_full_bellies;
 	pthread_mutex_t		lock_dead;
-	pthread_mutex_t		lock;
-	pthread_mutex_t		*forks;
+	pthread_mutex_t		lock_write;
+	pthread_mutex_t		*lock_forks;
 	t_philos			*philos;
 }t_data;
 
 /*UTILS*/
+int		philo_is_dead(t_philos *philos);
 int		positive_atoi(const char *str);
 int		get_time(void);
 void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
-int		all_have_eaten(t_philos *philos);
 
 /*ACTIONS*/
-int		philo_is_dead(t_philos *philos);
+int		have_eaten_all_his_meals(t_philos *philos);
 void	philo_is_sleeping(t_philos *philos);
 void	philo_is_eating(t_philos *philos);
 

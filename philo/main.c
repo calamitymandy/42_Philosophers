@@ -10,37 +10,36 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* system("leaks philo"); */
-
-/* Problemas o Mejoras:
-
-Manejo de Memoria:
-Liberar la memoria reservada.
-
-Manejo de Errores:
-En caso de que se detecte un error durante la inicialización o ejecución del
-programa, sería útil implementar un mecanismo de manejo de errores más robusto, 
-como la liberación adecuada de la memoria reservada y una salida clara indicando 
-el motivo del error.
-*/
-
 #include "philo.h"
 
+/* To check LEAKS use this command line:
+		valgrind --leak-check=yes myprog arg1 arg2
+*/
+
+/**
+ * The routine function manages the actions of a philosopher in a dining 
+ * philosophers problem, such as eating, sleeping, and thinking, while 
+ * checking for certain conditions like death or completion of meals.
+ * 
+ * if philo_id is even:
+ * wait_given_time(philos, 15); -> to make even philo wait and avoid 
+ * all philos to take the same fork
+ */
 void	*routine(void *arg)
 {
 	t_philos	*philos;
 
 	philos = (t_philos *)arg;
-	if (philos->philo_id % 2 == 0) // MOVE IT ELSEWHERE???
-		wait_given_time(philos, 1); // to avoid all philos to take same fork
+	if (philos->philo_id % 2 == 0)
+		wait_given_time(philos, 15);
 	while (!philos->data->is_dead)
 	{
 		if (philo_is_dead(philos))
 			return (0);
-		if (!lone_philo(philos))
+		if (lone_philo(philos))
 			return (0);
 		philo_is_eating(philos);
-		if (!all_have_eaten(philos))
+		if (have_eaten_all_his_meals(philos))
 			return (0);
 		if (philo_is_dead(philos))
 			return (0);
@@ -52,6 +51,11 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
+/*
+Check how many philosophers have eaten all their meals, 
+once the nb of full bellies is the same than the nb of philos,
+it means ALL philos have eaten ALL their meals.
+*/
 int	check_nb_of_full_bellies(t_data *data)
 {
 	int	nb_of_full_bellies;
@@ -64,6 +68,12 @@ int	check_nb_of_full_bellies(t_data *data)
 	return (0);
 }
 
+/**
+ * data->is_dead = 1; -> here to stop loop if one is dead
+ * Continuously checks the time elapsed since the last meal of 
+ * each philosopher and marks them as dead if they exceed 
+ * the time allowed to die.
+ */
 void	*look_n_check(t_data *data)
 {
 	int			i;
@@ -82,7 +92,7 @@ void	*look_n_check(t_data *data)
 			if (get_time() - last_meal > data->time_to_die)
 			{
 				pthread_mutex_lock(&data->lock_dead);
-				data->is_dead = 1; //here to stop loop if one is dead!!!!
+				data->is_dead = 1;
 				pthread_mutex_unlock(&data->lock_dead);
 				write_message("died", data->philos);
 				break ;
@@ -92,6 +102,9 @@ void	*look_n_check(t_data *data)
 	return (NULL);
 }
 
+/*
+data->philos[i].data = data; -> To set the data field to the main data structure
+*/
 void	start_simulation(t_data *data)
 {
 	int	i;
@@ -100,7 +113,7 @@ void	start_simulation(t_data *data)
 	init_philos(data);
 	while (i < data->nb_of_philos)
 	{
-		data->philos[i].data = data; // Set the data field to the main data structure
+		data->philos[i].data = data;
 		pthread_create(&data->philos[i].thread_id, NULL, routine,
 			(void *)&data->philos[i]);
 		i++;
@@ -132,7 +145,7 @@ int	main(int argc, char **argv)
 	data.start_time = get_time();
 	start_simulation(&data);
 	free(data.philos);
-	free(data.forks);
+	free(data.lock_forks);
 	free(data.taken_fork);
 	return (0);
 }

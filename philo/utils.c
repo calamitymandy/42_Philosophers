@@ -53,17 +53,17 @@ void	write_message(char *str, t_philos *philos)
 {
 	if (*str == 'd')
 	{
-		pthread_mutex_lock(&philos->data->lock);
-		printf("%lld philosopher %d %s\n", get_time()
+		pthread_mutex_lock(&philos->data->lock_write);
+		printf("%lld %d %s\n", get_time()
 			- philos->data->start_time, philos->philo_id, str);
-		pthread_mutex_unlock(&philos->data->lock);
+		pthread_mutex_unlock(&philos->data->lock_write);
 	}
 	if (!philo_is_dead(philos))
 	{
-		pthread_mutex_lock(&philos->data->lock);
-		printf("%lld philosopher %d %s\n", get_time()
+		pthread_mutex_lock(&philos->data->lock_write);
+		printf("%lld %d %s\n", get_time()
 			- philos->data->start_time, philos->philo_id, str);
-		pthread_mutex_unlock(&philos->data->lock);
+		pthread_mutex_unlock(&philos->data->lock_write);
 	}
 }
 
@@ -85,20 +85,17 @@ void	wait_given_time(t_philos *philos, int given_time)
 	start_time = get_time();
 	while ((get_time() - start_time) < given_time
 		&& !philo_is_dead(philos))
-	{
-		usleep(100);
-	}
+		usleep(50);
 }
 
-/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
-int	all_have_eaten(t_philos *philos)
+int	philo_is_dead(t_philos *philos)
 {
-	if (philos->meals_eaten == philos->data->nb_of_meals)
+	pthread_mutex_lock(&philos->data->lock_dead);
+	if (philos->data->is_dead)
 	{
-		pthread_mutex_lock(&philos->data->lock_full_bellies);
-		philos->data->nb_of_full_bellies++;
-		pthread_mutex_unlock(&philos->data->lock_full_bellies);
-		return (0);
+		pthread_mutex_unlock(&philos->data->lock_dead);
+		return (1);
 	}
-	return (1);
+	pthread_mutex_unlock(&philos->data->lock_dead);
+	return (0);
 }

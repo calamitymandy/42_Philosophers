@@ -12,38 +12,39 @@
 
 #include "philo.h"
 
-int	philo_is_dead(t_philos *philos)
+/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
+int	have_eaten_all_his_meals(t_philos *philos)
 {
-	pthread_mutex_lock(&philos->data->lock_dead);
-	if (philos->data->is_dead)
+	if (philos->meals_eaten == philos->data->nb_of_meals)
 	{
-		pthread_mutex_unlock(&philos->data->lock_dead);
+		pthread_mutex_lock(&philos->data->lock_full_bellies);
+		philos->data->nb_of_full_bellies++;
+		pthread_mutex_unlock(&philos->data->lock_full_bellies);
 		return (1);
 	}
-	pthread_mutex_unlock(&philos->data->lock_dead);
 	return (0);
 }
 
 static void	is_fork_available(t_philos *philos, int which)
 {
-	pthread_mutex_lock(&philos->data->forks[which]);
+	pthread_mutex_lock(&philos->data->lock_forks[which]);
 	if (philos->data->taken_fork[which] == 0)
 	{
 		philos->data->taken_fork[which] = 1;
 		philos->forks++;
 		write_message("has taken a fork", philos);
 	}
-	pthread_mutex_unlock(&philos->data->forks[which]);
+	pthread_mutex_unlock(&philos->data->lock_forks[which]);
 }
 
 static void	drop_forks(t_philos *philos, int first_fork, int second_fork)
 {
-	pthread_mutex_lock(&philos->data->forks[first_fork]);
+	pthread_mutex_lock(&philos->data->lock_forks[first_fork]);
 	philos->data->taken_fork[first_fork] = 0;
-	pthread_mutex_unlock(&philos->data->forks[first_fork]);
-	pthread_mutex_lock(&philos->data->forks[second_fork]);
+	pthread_mutex_unlock(&philos->data->lock_forks[first_fork]);
+	pthread_mutex_lock(&philos->data->lock_forks[second_fork]);
 	philos->data->taken_fork[second_fork] = 0;
-	pthread_mutex_unlock(&philos->data->forks[second_fork]);
+	pthread_mutex_unlock(&philos->data->lock_forks[second_fork]);
 	philos->forks = 0;
 }
 

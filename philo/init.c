@@ -31,7 +31,7 @@ int	start_init(char **argv, t_data *data)
 	}
 	data->is_dead = 0;
 	pthread_mutex_init(&data->lock_dead, NULL);
-	pthread_mutex_init(&data->lock, NULL);
+	pthread_mutex_init(&data->lock_write, NULL);
 	pthread_mutex_init(&data->lock_full_bellies, NULL);
 	return (0);
 }
@@ -45,7 +45,6 @@ void	init_philos(t_data *data)
 	{
 		data->philos[i].philo_id = i + 1;
 		data->philos[i].meals_eaten = 0;
-		data->philos[i].is_eating = 0;
 		data->philos[i].last_meal = get_time();
 		data->philos[i].forks = 0;
 		i++;
@@ -55,21 +54,14 @@ void	init_philos(t_data *data)
 int	mallocating(t_data *data)
 {
 	data->philos = malloc(sizeof(t_philos) * data->nb_of_philos);
-	if (!data->philos)
-	{
-		printf("Malloc error: philos");
-		return (1);
-	}
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->nb_of_philos);
-	if (!data->forks)
-	{
-		printf("Malloc error: forks");
-		return (1);
-	}
+	data->lock_forks = malloc(sizeof(pthread_mutex_t) * data->nb_of_philos);
 	data->taken_fork = malloc(sizeof(char) * data->nb_of_philos);
-	if ((!data->philos || !data->forks) && data)
+	if (!data->philos || !data->lock_forks || !data->taken_fork)
 	{
-		//TO DO exit & destroy function
+		if (!data->philos)
+			printf("Malloc error: philos");
+		else if (!data->lock_forks || !data->taken_fork)
+			printf("Malloc error: forks");
 		return (1);
 	}
 	return (0);
@@ -90,7 +82,7 @@ int	init_forks(t_data *data)
 	i = -1;
 	while (++i < data->nb_of_philos)
 	{
-		pthread_mutex_init(&data->forks[i], NULL);
+		pthread_mutex_init(&data->lock_forks[i], NULL);
 		pthread_mutex_init(&data->philos[i].lock_meal, NULL);
 		data->taken_fork[i] = 0;
 	}
@@ -101,9 +93,9 @@ int	lone_philo(t_philos *philos)
 {
 	if (philos->data->nb_of_philos == 1)
 	{
-		write_message("has taken the one and only fork", philos);
+		write_message("has taken a fork", philos);
 		wait_given_time(philos, philos->data->time_to_die);
-		return (0);
+		return (1);
 	}
-	return (1);
+	return (0);
 }
