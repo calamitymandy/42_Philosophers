@@ -51,20 +51,25 @@ int	get_time(void)
 
 void	write_message(char *str, t_philos *philos)
 {
-	if (*str == 'd')
+	if (*str == 'd' && *(str + 1) == 'i')
 	{
 		pthread_mutex_lock(&philos->data->lock_write);
 		printf("%lld %d %s\n", get_time()
 			- philos->data->start_time, philos->philo_id, str);
 		pthread_mutex_unlock(&philos->data->lock_write);
+		return ;
 	}
-	if (!philo_is_dead(philos))
+	pthread_mutex_lock(&philos->data->lock_dead);
+	if (philos->data->is_dead == 1)
 	{
-		pthread_mutex_lock(&philos->data->lock_write);
-		printf("%lld %d %s\n", get_time()
-			- philos->data->start_time, philos->philo_id, str);
-		pthread_mutex_unlock(&philos->data->lock_write);
+		pthread_mutex_unlock(&philos->data->lock_dead);
+		return ;
 	}
+	pthread_mutex_lock(&philos->data->lock_write);
+	printf("%lld %d %s\n", get_time()
+		- philos->data->start_time, philos->philo_id, str);
+	pthread_mutex_unlock(&philos->data->lock_write);
+	pthread_mutex_unlock(&philos->data->lock_dead);
 }
 
 /**
@@ -91,7 +96,7 @@ void	wait_given_time(t_philos *philos, int given_time)
 int	philo_is_dead(t_philos *philos)
 {
 	pthread_mutex_lock(&philos->data->lock_dead);
-	if (philos->data->is_dead)
+	if (philos->data->is_dead == 1)
 	{
 		pthread_mutex_unlock(&philos->data->lock_dead);
 		return (1);

@@ -36,6 +36,7 @@ typedef struct s_philos
 
 typedef struct s_init_data
 {
+	int					can_init;
 	int					nb_of_philos;
 	int					time_to_die;
 	int					time_to_eat;
@@ -45,6 +46,7 @@ typedef struct s_init_data
 	int					is_dead;
 	char				*taken_fork;
 	int					nb_of_full_bellies;
+	pthread_mutex_t		init_mutex;
 	pthread_mutex_t		lock_full_bellies;
 	pthread_mutex_t		lock_dead;
 	pthread_mutex_t		lock_write;
@@ -61,7 +63,7 @@ void	wait_given_time(t_philos *philos, int given_time);
 
 /*ACTIONS*/
 int		have_eaten_all_his_meals(t_philos *philos);
-void	philo_is_sleeping(t_philos *philos);
+int		philo_is_sleeping(t_philos *philos);
 void	philo_is_eating(t_philos *philos);
 
 /*INIT*/

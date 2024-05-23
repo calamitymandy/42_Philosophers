@@ -76,8 +76,11 @@ void	philo_is_eating(t_philos *philos)
 	drop_forks(philos, first_fork, second_fork);
 }
 
-void	philo_is_sleeping(t_philos *philos)
+int	philo_is_sleeping(t_philos *philos)
 {
+	if (philo_is_dead(philos))
+		return (0);
 	write_message("is sleeping", philos);
 	wait_given_time(philos, philos->data->time_to_sleep);
+	return (1);
 }

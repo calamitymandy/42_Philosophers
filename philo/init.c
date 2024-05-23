@@ -14,12 +14,14 @@
 
 int	start_init(char **argv, t_data *data)
 {
+	data->can_init = 0;
 	data->nb_of_philos = positive_atoi(argv[1]);
 	data->time_to_die = positive_atoi(argv[2]);
 	data->time_to_eat = positive_atoi(argv[3]);
 	data->time_to_sleep = positive_atoi(argv[4]);
 	data->nb_of_full_bellies = 0;
 	data->nb_of_meals = -1;
+	data->is_dead = 0;
 	if (argv[5])
 		data->nb_of_meals = positive_atoi(argv[5]);
 	if (data->nb_of_philos <= 0 || data->nb_of_philos > 200
@@ -29,10 +31,10 @@ int	start_init(char **argv, t_data *data)
 		printf("Incorrect arguments");
 		return (1);
 	}
-	data->is_dead = 0;
 	pthread_mutex_init(&data->lock_dead, NULL);
 	pthread_mutex_init(&data->lock_write, NULL);
 	pthread_mutex_init(&data->lock_full_bellies, NULL);
+	pthread_mutex_init(&data->init_mutex, NULL);
 	return (0);
 }
 
