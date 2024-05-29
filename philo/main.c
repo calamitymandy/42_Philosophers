@@ -55,9 +55,21 @@ void	*routine(void *arg)
 	return ((void *)arg);
 }
 
-/*
-* data->is_dead = 1; -> here to stop loop if one is dead
-*/
+/**
+ * Checks if a philosopher has exceeded the time to die and updates
+ * the status accordingly.
+ * 
+ * If the philosopher has exceeded the time allowed (`data->time_to_die`)
+ * without eating, the function will return 1 indicating that the 
+ * philosopher has died. 
+ * Otherwise, it will return 0 indicating that the philosopher is still alive.
+ * 
+ * get_time() - last_meal > data->time_to_die: Checks if the time since 
+ * the last meal is greater than the allowed time to die. If so:
+ * - data->is_dead = 1; -> to stop loop if one is dead
+ * - write message of death
+ * - return (1)
+ */
 int	rip_stop_and_write(t_data *data, int i)
 {
 	long long	last_meal;
@@ -115,7 +127,16 @@ void	*look_n_check(t_data *data)
 }
 
 /*
-data->philos[i].data = data; -> To set the data field to the main data structure
+* Starts the simulation by creating and managing threads for each philosopher.
+* - data->philos[i].data = data -> Set the data field to the main data struct
+* - pthread_create: Creates a thread for each philosopher to run the routine.
+* - pthread_mutex_lock(&data->waiting_all_philos): Synchronizes to ensure all 
+* philosophers start at the same time.
+* - look_n_check(data): Monitors the simulation.
+* - pthread_join(data->philos[i].thread_id, NULL): ensures that the main thread 
+* waits for the philosopher thread i to finish its execution. It blocks the main 
+* thread until the specified thread (in this case, the philosopher's thread) 
+* terminates.
 */
 void	start_simulation(t_data *data)
 {

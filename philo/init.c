@@ -55,7 +55,7 @@ int	mallocating(t_data *data)
 }
 
 /**
- * The function initializes the data structure for philosophers and forks, 
+ * Initializes the data structure for philosophers and forks, 
  * setting initial values and initializing mutex locks.
  */
 int	init_philos_n_forks(t_data *data)
@@ -81,6 +81,9 @@ int	init_philos_n_forks(t_data *data)
 	return (0);
 }
 
+/**
+ * Initiate a loop to wait until all philosophers are ready to start.
+ */
 void	waiting_for_everyone(t_philos *philos)
 {
 	int	ready_to_go;
@@ -94,6 +97,10 @@ void	waiting_for_everyone(t_philos *philos)
 	}
 }
 
+/**
+ * Checks if there is only one philosopher 
+ * if so, waits time_to_die and return (1) to stop routine
+ */
 int	lone_philo(t_philos *philos)
 {
 	if (philos->data->nb_of_philos == 1)
