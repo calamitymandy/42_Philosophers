@@ -14,7 +14,7 @@
 
 int	start_init(char **argv, t_data *data)
 {
-	data->can_init = 0;
+	data->go_go_go = 0;
 	data->nb_of_philos = positive_atoi(argv[1]);
 	data->time_to_die = positive_atoi(argv[2]);
 	data->time_to_eat = positive_atoi(argv[3]);
@@ -34,23 +34,8 @@ int	start_init(char **argv, t_data *data)
 	pthread_mutex_init(&data->lock_dead, NULL);
 	pthread_mutex_init(&data->lock_write, NULL);
 	pthread_mutex_init(&data->lock_full_bellies, NULL);
-	pthread_mutex_init(&data->init_mutex, NULL);
+	pthread_mutex_init(&data->waiting_all_philos, NULL);
 	return (0);
-}
-
-void	init_philos(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->nb_of_philos)
-	{
-		data->philos[i].philo_id = i + 1;
-		data->philos[i].meals_eaten = 0;
-		data->philos[i].last_meal = get_time();
-		data->philos[i].forks = 0;
-		i++;
-	}
 }
 
 int	mallocating(t_data *data)
@@ -69,26 +54,44 @@ int	mallocating(t_data *data)
 	return (0);
 }
 
-/*
- * The function initializes the forks for a dining philosophers problem:
- * - 1st while loop to initialize the mutex for each fork.
- * - Then assign left[0] and right[nb_of_philos -1] forks for the 1st philo
- * - 2nd loop to initialize left and right forks for every other philosopher.
- * It assigns the left fork to the current philosopher as the fork at index `i`,
- * and the right fork as the fork at index `i - 1`.
+/**
+ * The function initializes the data structure for philosophers and forks, 
+ * setting initial values and initializing mutex locks.
  */
-int	init_forks(t_data *data)
+int	init_philos_n_forks(t_data *data)
 {
 	int	i;
 
-	i = -1;
-	while (++i < data->nb_of_philos)
+	i = 0;
+	while (i < data->nb_of_philos)
 	{
-		pthread_mutex_init(&data->lock_forks[i], NULL);
-		pthread_mutex_init(&data->philos[i].lock_meal, NULL);
+		data->philos[i].philo_id = i + 1;
+		data->philos[i].meals_eaten = 0;
+		data->philos[i].last_meal = get_time();
+		data->philos[i].forks = 0;
+		if ((pthread_mutex_init(&data->lock_forks[i], NULL) != 0)
+			|| (pthread_mutex_init(&data->philos[i].lock_meal, NULL) != 0))
+		{
+			printf("Mutex init error: forks");
+			return (1);
+		}
 		data->taken_fork[i] = 0;
+		i++;
 	}
 	return (0);
+}
+
+void	waiting_for_everyone(t_philos *philos)
+{
+	int	ready_to_go;
+
+	ready_to_go = 0;
+	while (!ready_to_go)
+	{
+		pthread_mutex_lock(&philos->data->waiting_all_philos);
+		ready_to_go = philos->data->go_go_go;
+		pthread_mutex_unlock(&philos->data->waiting_all_philos);
+	}
 }
 
 int	lone_philo(t_philos *philos)

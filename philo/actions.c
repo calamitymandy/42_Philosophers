@@ -12,19 +12,6 @@
 
 #include "philo.h"
 
-/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
-int	have_eaten_all_his_meals(t_philos *philos)
-{
-	if (philos->meals_eaten == philos->data->nb_of_meals)
-	{
-		pthread_mutex_lock(&philos->data->lock_full_bellies);
-		philos->data->nb_of_full_bellies++;
-		pthread_mutex_unlock(&philos->data->lock_full_bellies);
-		return (1);
-	}
-	return (0);
-}
-
 static void	is_fork_available(t_philos *philos, int which)
 {
 	pthread_mutex_lock(&philos->data->lock_forks[which]);
@@ -48,6 +35,10 @@ static void	drop_forks(t_philos *philos, int first_fork, int second_fork)
 	philos->forks = 0;
 }
 
+/**
+ * The function `philo_is_eating` is responsible for handling the eating 
+ * behavior of a philosopher in a dining philosophers problem simulation.
+ */
 void	philo_is_eating(t_philos *philos)
 {
 	int	first_fork;
@@ -74,6 +65,19 @@ void	philo_is_eating(t_philos *philos)
 	wait_given_time(philos, philos->data->time_to_eat);
 	philos->meals_eaten++;
 	drop_forks(philos, first_fork, second_fork);
+}
+
+/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
+int	have_eaten_all_his_meals(t_philos *philos)
+{
+	if (philos->meals_eaten == philos->data->nb_of_meals)
+	{
+		pthread_mutex_lock(&philos->data->lock_full_bellies);
+		philos->data->nb_of_full_bellies++;
+		pthread_mutex_unlock(&philos->data->lock_full_bellies);
+		return (1);
+	}
+	return (0);
 }
 
 int	philo_is_sleeping(t_philos *philos)

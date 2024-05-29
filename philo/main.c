@@ -12,24 +12,11 @@
 
 #include "philo.h"
 
-static void	waiting(t_philos *philos)
-{
-	int	can_do;
-
-	can_do = 0;
-	while (!can_do)
-	{
-		pthread_mutex_lock(&philos->data->init_mutex);
-		can_do = philos->data->can_init;
-		pthread_mutex_unlock(&philos->data->init_mutex);
-	}
-}
-
 /* To check LEAKS use this command line:
-		valgrind --leak-check=yes myprog arg1 arg2
+		valgrind --leak-check=yes ./philo 5 800 200 200
 */
 /*
-while(philos->data->can_init == 0);
+while(philos->data->go_go_go == 0);
 */
 /**
  * The routine function manages the actions of a philosopher in a dining 
@@ -47,7 +34,7 @@ void	*routine(void *arg)
 
 	dead = 0;
 	philos = (t_philos *)arg;
-	waiting(philos);
+	waiting_for_everyone(philos);
 	if (philos->philo_id % 2 == 0)
 		wait_given_time(philos, 15);
 	while (!dead)
@@ -67,20 +54,6 @@ void	*routine(void *arg)
 	}
 	return ((void *)arg);
 }
-
-/*
-int	check_nb_of_full_bellies(t_data *data)
-{
-	int	nb_of_full_bellies;
-
-	pthread_mutex_lock(&data->lock_full_bellies);
-	nb_of_full_bellies = data->nb_of_full_bellies;
-	pthread_mutex_unlock(&data->lock_full_bellies);
-	if (nb_of_full_bellies == data->nb_of_philos)
-		return (1);
-	return (0);
-}
-*/
 
 /*
 * data->is_dead = 1; -> here to stop loop if one is dead
@@ -156,9 +129,9 @@ void	start_simulation(t_data *data)
 			(void *)&data->philos[i]);
 		i++;
 	}
-	pthread_mutex_lock(&data->init_mutex);
-	data->can_init = 1;
-	pthread_mutex_unlock(&data->init_mutex);
+	pthread_mutex_lock(&data->waiting_all_philos);
+	data->go_go_go = 1;
+	pthread_mutex_unlock(&data->waiting_all_philos);
 	look_n_check(data);
 	i = 0;
 	while (i < data->nb_of_philos)
@@ -179,12 +152,11 @@ int	main(int argc, char **argv)
 	}
 	if (start_init(argv, &data))
 		return (1);
+	data.start_time = get_time();
 	if (mallocating(&data))
 		return (1);
-	if (init_forks(&data))
+	if (init_philos_n_forks(&data))
 		return (1);
-	data.start_time = get_time();
-	init_philos(&data);
 	start_simulation(&data);
 	free(data.philos);
 	free(data.lock_forks);

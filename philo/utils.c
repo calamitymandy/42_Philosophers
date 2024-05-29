@@ -49,6 +49,27 @@ int	get_time(void)
 	return ((time_value.tv_sec * 1000) + (time_value.tv_usec / 1000));
 }
 
+/**
+ * The function "wait_given_time" waits for a given amount of time or 
+ * until a philosopher is dead.
+ * 
+ * @param philos A pointer to a struct that contains information about
+ * the philosophers.
+ * @param given_time The given_time parameter is the amount of time in
+ * milliseconds that the function
+ * should wait for.
+ */
+void	wait_given_time(t_philos *philos, int given_time)
+{
+	int	start_time;
+
+	(void)philos;
+	start_time = get_time();
+	while ((get_time() - start_time) < given_time
+		&& !philo_is_dead(philos))
+		usleep(50);
+}
+
 void	write_message(char *str, t_philos *philos)
 {
 	if (*str == 'd' && *(str + 1) == 'i')
@@ -70,27 +91,6 @@ void	write_message(char *str, t_philos *philos)
 		- philos->data->start_time, philos->philo_id, str);
 	pthread_mutex_unlock(&philos->data->lock_write);
 	pthread_mutex_unlock(&philos->data->lock_dead);
-}
-
-/**
- * The function "wait_given_time" waits for a given amount of time or 
- * until a philosopher is dead.
- * 
- * @param philos A pointer to a struct that contains information about
- * the philosophers.
- * @param given_time The given_time parameter is the amount of time in
- * milliseconds that the function
- * should wait for.
- */
-void	wait_given_time(t_philos *philos, int given_time)
-{
-	int	start_time;
-
-	(void)philos;
-	start_time = get_time();
-	while ((get_time() - start_time) < given_time
-		&& !philo_is_dead(philos))
-		usleep(50);
 }
 
 int	philo_is_dead(t_philos *philos)

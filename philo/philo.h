@@ -36,7 +36,7 @@ typedef struct s_philos
 
 typedef struct s_init_data
 {
-	int					can_init;
+	int					go_go_go;
 	int					nb_of_philos;
 	int					time_to_die;
 	int					time_to_eat;
@@ -46,7 +46,7 @@ typedef struct s_init_data
 	int					is_dead;
 	char				*taken_fork;
 	int					nb_of_full_bellies;
-	pthread_mutex_t		init_mutex;
+	pthread_mutex_t		waiting_all_philos;
 	pthread_mutex_t		lock_full_bellies;
 	pthread_mutex_t		lock_dead;
 	pthread_mutex_t		lock_write;
@@ -55,22 +55,22 @@ typedef struct s_init_data
 }t_data;
 
 /*UTILS*/
-int		philo_is_dead(t_philos *philos);
 int		positive_atoi(const char *str);
 int		get_time(void);
-void	write_message(char *str, t_philos *philos);
 void	wait_given_time(t_philos *philos, int given_time);
+void	write_message(char *str, t_philos *philos);
+int		philo_is_dead(t_philos *philos);
 
 /*ACTIONS*/
+void	philo_is_eating(t_philos *philos);
 int		have_eaten_all_his_meals(t_philos *philos);
 int		philo_is_sleeping(t_philos *philos);
-void	philo_is_eating(t_philos *philos);
 
 /*INIT*/
 int		start_init(char **argv, t_data *data);
-void	init_philos(t_data *data);
 int		mallocating(t_data *data);
-int		init_forks(t_data *data);
+int		init_philos_n_forks(t_data *data);
+void	waiting_for_everyone(t_philos *philos);
 int		lone_philo(t_philos *philos);
 
 #endif
