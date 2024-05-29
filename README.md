@@ -118,6 +118,7 @@ In this project, we want to ensure that the main thread of our program waits for
 ## TESTS
 
 ### End with death or enough eaten
+
 ./philo 1 800 200 200 | a philo should die
 
 ./philo 4 310 200 100 | a philo should die
@@ -131,15 +132,25 @@ In this project, we want to ensure that the main thread of our program waits for
 ./philo 4 410 200 200 10 | no one should die, simulation should stop after 10 eats
 
 ### Incorrect arguments
-- ./philo -5 600 200 200 | should error and not run (no crashing)
-- ./philo 4 -5 200 200 | should error and not run (no crashing)
-- ./philo 4 600 -5 200 | should error and not run (no crashing)
-- ./philo 4 600 200 -5 | should error and not run (no crashing)
+
+./philo -5 600 200 200 | should error and not run (no crashing)
+
+./philo 4 -5 200 200 | should error and not run (no crashing)
+
+./philo 4 600 -5 200 | should error and not run (no crashing)
+
+./philo 4 600 200 -5 | should error and not run (no crashing)
 
 ### Philosophers should NOT die
-- ./philo 5 600 150 150 | no one should die
-- ./philo 4 410 200 200 | no one should die
-- ./philo 100 800 200 200 | no one should die
-- ./philo 105 800 200 200 | no one should die
-- ./philo 200 800 200 200 | no one should die
-- ./philo 3 310 103 103 | no one should die
+
+./philo 5 600 150 150 | no one should die
+
+./philo 4 410 200 200 | no one should die
+
+./philo 100 800 200 200 | no one should die
+
+./philo 105 800 200 200 | no one should die
+
+./philo 200 800 200 200 | no one should die
+
+./philo 3 310 103 103 | no one should die
