@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amdemuyn <amdemuyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/08 18:12:37 by amdemuyn          #+#    #+#             */
-/*   Updated: 2023/12/08 18:12:40 by amdemuyn         ###   ########.fr       */
+/*   Created: 2024/07/23 19:09:34 by amdemuyn          #+#    #+#             */
+/*   Updated: 2024/07/23 19:09:58 by amdemuyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,11 +53,8 @@ int	get_time(void)
  * The function "wait_given_time" waits for a given amount of time or 
  * until a philosopher is dead.
  * 
- * @param philos A pointer to a struct that contains information about
- * the philosophers.
- * @param given_time The given_time parameter is the amount of time in
- * milliseconds that the function
- * should wait for.
+ * given_time parameter is the amount of time in milliseconds that 
+ * the function should wait for.
  */
 void	wait_given_time(t_philos *philos, int given_time)
 {

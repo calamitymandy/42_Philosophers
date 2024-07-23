@@ -5,23 +5,22 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amdemuyn <amdemuyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/07 19:14:57 by amdemuyn          #+#    #+#             */
-/*   Updated: 2023/12/07 19:19:36 by amdemuyn         ###   ########.fr       */
+/*   Created: 2024/07/23 17:44:07 by amdemuyn          #+#    #+#             */
+/*   Updated: 2024/07/23 19:12:33 by amdemuyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* To check LEAKS use this command line:
-		valgrind --leak-check=yes ./philo 5 800 200 200
-*/
-/*
-while(philos->data->go_go_go == 0);
-*/
 /**
  * The routine function manages the actions of a philosopher in a dining 
  * philosophers problem, such as eating, sleeping, and thinking, while 
  * checking for certain conditions like death or completion of meals.
+ * 
+ * waiting_for_everyone: used to wait for all philosophers' threads to be 
+ * created before they start their actions and so all philosophers are 
+ * ready to begin their routine simultaneously to avoid any race conditions 
+ * or inconsistencies in the behavior of the philosophers.
  * 
  * if philo_id is even:
  * wait_given_time(philos, 15); -> to make even philo wait and avoid 
@@ -94,8 +93,9 @@ int	rip_stop_and_write(t_data *data, int i)
  * once the nb of full bellies is the same than the nb of philos,
  * it means ALL philos have eaten ALL their meals.
  * 
- * 2- the time elapsed since the last meal of each philosopher 
- * and marks them as dead if they exceed the time allowed to die.
+ * 2- with rip_stop_and_write: the time elapsed since the last 
+ * meal of each philosopher  and marks them as dead if they 
+ * exceed the time allowed to die.
  */
 void	*look_n_check(t_data *data)
 {

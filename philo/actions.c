@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amdemuyn <amdemuyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/03/13 17:06:29 by amdemuyn          #+#    #+#             */
-/*   Updated: 2024/03/13 17:06:34 by amdemuyn         ###   ########.fr       */
+/*   Created: 2024/07/23 19:08:04 by amdemuyn          #+#    #+#             */
+/*   Updated: 2024/07/23 19:08:38 by amdemuyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,18 @@ static void	drop_forks(t_philos *philos, int first_fork, int second_fork)
 }
 
 /**
- * The function `philo_is_eating` is responsible for handling the eating 
- * behavior of a philosopher in a dining philosophers problem simulation.
+ * 1. Determines the correct forks for the philosopher to pick up.
+ * 		- If the philosopher is the last one (ID == total nB of philos), 
+ * 		second_fork is set to 0 to handle the circular arrangement of forks.
+ * 		- To avoid deadlock, the order in which forks are picked up is swapped 
+ * 		for even-numbered philosophers. This ensures that not all philosophers
+ *		try to pick up the same fork first, reducing contention.
+ * 2. Ensures the philosopher picks up both forks before eating.
+ * 		The loop goes on until the philo has both forks (philos->forks < 2).
+ * 3. Updates the last meal time in a thread-safe manner.
+ * 4. Logs the eating action and simulates the eating time.
+ * 5. Increments the count of meals eaten.
+ * 6. Releases the forks after eating.
  */
 void	philo_is_eating(t_philos *philos)
 {
@@ -67,7 +77,6 @@ void	philo_is_eating(t_philos *philos)
 	drop_forks(philos, first_fork, second_fork);
 }
 
-/*printf("philo %d meals eaten: %d\n", philos->philo_id, philos->meals_eaten);*/
 int	have_eaten_all_his_meals(t_philos *philos)
 {
 	if (philos->meals_eaten == philos->data->nb_of_meals)

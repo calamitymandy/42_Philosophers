@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amdemuyn <amdemuyn@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/07 19:33:25 by amdemuyn          #+#    #+#             */
-/*   Updated: 2023/12/07 19:33:27 by amdemuyn         ###   ########.fr       */
+/*   Created: 2024/07/23 16:14:00 by amdemuyn          #+#    #+#             */
+/*   Updated: 2024/07/23 16:15:23 by amdemuyn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef struct s_philos
 	int					meals_eaten;
 	int					forks;
 	pthread_mutex_t		lock_meal;
-}t_philos;
+}	t_philos;
 
 typedef struct s_init_data
 {
@@ -52,7 +52,7 @@ typedef struct s_init_data
 	pthread_mutex_t		lock_write;
 	pthread_mutex_t		*lock_forks;
 	t_philos			*philos;
-}t_data;
+}	t_data;
 
 /*UTILS*/
 int		positive_atoi(const char *str);

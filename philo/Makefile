@@ -1,4 +1,4 @@
-# **************************************************************************** #
+#******************************************************************************#
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
@@ -6,9 +6,9 @@
 #    By: amdemuyn <amdemuyn@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/07 19:21:00 by amdemuyn          #+#    #+#              #
-#    Updated: 2023/12/07 19:21:06 by amdemuyn         ###   ########.fr        #
+#    Updated: 2024/07/23 17:42:53 by amdemuyn         ###   ########.fr        #
 #                                                                              #
-# **************************************************************************** #
+#******************************************************************************#
 
 YELLOW =		\033[0;93m
 RED =			\033[0;91m
@@ -16,12 +16,13 @@ GREEN =			\033[0;92m
 
 NAME = philo
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror #-pthread -g3 -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -pthread -g3 -fsanitize=thread
 
 #-pthread
 #-g3
 #-g3 -fsanitize=address
 #-g3 -fsanitize=thread
+# To check LEAKS use: valgrind --leak-check=yes ./philo 5 800 200 200
 
 SRC = main.c init.c actions.c utils.c
 
